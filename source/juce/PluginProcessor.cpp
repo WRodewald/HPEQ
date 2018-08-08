@@ -143,19 +143,19 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+	
+	// thread savely update our cached impulse response
+	updateLiveIR();
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+	// get pointers
+	auto lRead  = buffer.getReadPointer(0);
+	auto rRead  = buffer.getReadPointer(1);
 
-        // ..do something to the data...
-    }
+	auto lWrite = buffer.getWritePointer(0);
+	auto rWrite = buffer.getWritePointer(1);
+
+	// process live IR
+	liveEngine->process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -172,15 +172,56 @@ AudioProcessorEditor* HpeqAudioProcessor::createEditor()
 //==============================================================================
 void HpeqAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	std::unique_ptr<XmlElement> xml = std::unique_ptr<XmlElement>(new XmlElement("IRFile"));
+	xml->setAttribute("Path", irFile.getFullPathName());
+	copyXmlToBinary(*xml, destData);
+
 }
 
 void HpeqAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+
+	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+	if (xmlState.get() != nullptr)
+	{
+		if (xmlState->hasTagName("IRFile"))
+		{
+			setIRFile(xmlState->getStringAttribute("Path"));
+		}
+	}
+}
+
+void HpeqAudioProcessor::setIRFile(juce::File file)
+{
+
+	this->irFile = file;
+	irLoader.loadImpulseResponse(irFile);
+
+	{
+		std::lock_guard<std::mutex> lock(irSwapMutex);
+	
+		cachedLoadedIR = std::unique_ptr<ImpulseResponse>(new ImpulseResponse(irLoader.getImpulseResponse()));
+
+		irNeedsSwap = true; 
+	}
+}
+
+juce::File HpeqAudioProcessor::getIRFile() const
+{
+	return irFile;
+}
+
+void HpeqAudioProcessor::updateLiveIR()
+{	
+	std::lock_guard<std::mutex> lock(irSwapMutex);
+
+	if (irNeedsSwap)
+	{
+		std::swap(cachedLiveIR, cachedLoadedIR);
+		irNeedsSwap = false;
+
+		tdConvolution.setImpulseResponse(cachedLiveIR.get());
+	}
 }
 
 //==============================================================================

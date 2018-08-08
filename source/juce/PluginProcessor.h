@@ -7,10 +7,17 @@
 
   ==============================================================================
 */
-
 #pragma once
 
+#ifndef ConvMaxSize
+	#define ConvMaxSize 16384
+#endif
+
+#include <mutex>
+
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "IRLoader.h"
+#include "../hpeq/TimeDomainConvolution.h"
 
 //==============================================================================
 /**
@@ -54,6 +61,31 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+	void setIRFile(juce::File file);
+	juce::File getIRFile() const;
+	
+private:
+
+	void updateLiveIR();
+
+private:
+
+	juce::File irFile;
+
+	IRLoader irLoader;
+
+	TimeDomainConvolution<ConvMaxSize> tdConvolution;
+
+	AConvolutionEngine * liveEngine{ &tdConvolution };
+
+	std::mutex irSwapMutex;
+
+	bool irNeedsSwap{ false }; // if true, we need to swap the live IR with a newly loaded IR
+
+	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// the ir
+	std::unique_ptr<ImpulseResponse> cachedLoadedIR{ nullptr };
+
 
 private:
     //==============================================================================

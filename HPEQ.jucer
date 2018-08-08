@@ -3,7 +3,31 @@
 <JUCERPROJECT id="YTvmLb" name="HPEQ" projectType="audioplug" jucerVersion="5.3.2"
               pluginCode="HPEQ" pluginManufacturerCode="AKT" pluginManufacturer="AKTTUBerlin">
   <MAINGROUP id="z6ETW7" name="HPEQ">
-    <GROUP id="{3AE6FE1F-A288-89D5-BB89-857E2F024A76}" name="source">
+    <GROUP id="{EA120079-477D-A3B8-7591-9173D9AEB368}" name="HPEQ">
+      <FILE id="vDEbjt" name="AConvolutionEngine.h" compile="0" resource="0"
+            file="Source/HPEQ/AConvolutionEngine.h"/>
+      <FILE id="Rbho2D" name="AFourierTransform.h" compile="0" resource="0"
+            file="Source/HPEQ/AFourierTransform.h"/>
+      <FILE id="Fi2RFY" name="ImpulseResponse.h" compile="0" resource="0"
+            file="Source/HPEQ/ImpulseResponse.h"/>
+      <FILE id="xuksMU" name="ImpulseResponseConfig.h" compile="0" resource="0"
+            file="Source/HPEQ/ImpulseResponseConfig.h"/>
+      <FILE id="vLtv6g" name="StaticRingBuffer.h" compile="0" resource="0"
+            file="Source/HPEQ/StaticRingBuffer.h"/>
+      <FILE id="TANRbT" name="TimeDomainConvolution.cpp" compile="1" resource="0"
+            file="Source/HPEQ/TimeDomainConvolution.cpp"/>
+      <FILE id="XMusVe" name="TimeDomainConvolution.h" compile="0" resource="0"
+            file="Source/HPEQ/TimeDomainConvolution.h"/>
+    </GROUP>
+    <GROUP id="{3AE6FE1F-A288-89D5-BB89-857E2F024A76}" name="juce">
+      <FILE id="ksVs54" name="JuceFourierTransform.cpp" compile="1" resource="0"
+            file="source/juce/JuceFourierTransform.cpp"/>
+      <FILE id="x5kMRd" name="JuceFourierTransform.h" compile="0" resource="0"
+            file="source/juce/JuceFourierTransform.h"/>
+      <FILE id="EW4ikW" name="IRFileSelector.cpp" compile="1" resource="0"
+            file="source/juce/IRFileSelector.cpp"/>
+      <FILE id="QoUplL" name="IRFileSelector.h" compile="0" resource="0"
+            file="source/juce/IRFileSelector.h"/>
       <FILE id="tzAEPo" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/juce/PluginEditor.cpp"/>
       <FILE id="rXne86" name="PluginEditor.h" compile="0" resource="0" file="Source/juce/PluginEditor.h"/>
@@ -11,6 +35,8 @@
             file="Source/juce/PluginProcessor.cpp"/>
       <FILE id="dnUDbC" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/juce/PluginProcessor.h"/>
+      <FILE id="C3FYRR" name="IRLoader.cpp" compile="1" resource="0" file="Source/juce/IRLoader.cpp"/>
+      <FILE id="VBOFRU" name="IRLoader.h" compile="0" resource="0" file="Source/juce/IRLoader.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
@@ -35,6 +61,7 @@
         <MODULEPATH id="juce_audio_processors" path="libs/JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="libs/JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="libs/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../Bibliotheken/JUCE_5_2_0/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -58,6 +85,7 @@
         <MODULEPATH id="juce_audio_processors" path="libs/JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="libs/JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="libs/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../Bibliotheken/JUCE_5_2_0/modules"/>
       </MODULEPATHS>
     </VS2017>
   </EXPORTFORMATS>
@@ -72,6 +100,7 @@
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -80,7 +109,7 @@
     <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <WINDOWS/>
+    <WINDOWS buildEnabled="0"/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS/>
 </JUCERPROJECT>
