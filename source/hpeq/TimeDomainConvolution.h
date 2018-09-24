@@ -46,17 +46,15 @@ void TimeDomainConvolution<MaxSize>::process(const float * readL, const float * 
 		// add the IR multiplied by input sample in the ringbuffer
 		for (int k = 0; k < irSize; k++)
 		{
-			bufferL[k] += l * irBufferL[k];
-			bufferR[k] += r * irBufferR[k];
+			unsigned int writePos = irSize - k - 1;
+			bufferL[writePos] += l * irBufferL[k];
+			bufferR[writePos] += r * irBufferR[k];
 		}
 
-		// read out current sample
-		writeL[i] = bufferL[0];
-		writeR[i] = bufferR[0];
+		// read out current sample and increment
+		writeL[i] = bufferL.tick(0);
+		writeR[i] = bufferR.tick(0);
 
-		// increment and flush
-		bufferL.tick(0);
-		bufferR.tick(0);
 	}
 }
 

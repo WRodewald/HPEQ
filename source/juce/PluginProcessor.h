@@ -18,11 +18,19 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "IRLoader.h"
 #include "../hpeq/TimeDomainConvolution.h"
+#include "../hpeq/AFourierTransformFactory.h"
+#include "JuceFourierTransform.h"
+
+class ImpulseResponseUpdateListener
+{
+public:
+	virtual void setUpdateIR(const ImpulseResponse & ir) = 0;
+};
 
 //==============================================================================
 /**
 */
-class HpeqAudioProcessor  : public AudioProcessor
+class HpeqAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
 {
 public:
     //==============================================================================
@@ -64,10 +72,32 @@ public:
 
 	void setIRFile(juce::File file);
 	juce::File getIRFile() const;
+
+
+	void setIRUpdateListener(ImpulseResponseUpdateListener * listener);
 	
+protected:
+	// Inherited via Listener
+	virtual void parameterValueChanged(int parameterIndex, float newValue) override;
+	virtual void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
+
 private:
 
-	void updateLiveIR();
+	/**
+		runs impulse response pre processing
+	*/
+	void updateAndPreProcessIR();
+
+	/**
+		Checks if the main thread knows about a new impulse response. If so, 
+		swaps the IR used in the audio thread with the one keept in the main thread
+	*/
+	void updateAudioThreadIR();
+
+	/**
+		Shedules a thread safe update of the impulse response used in the audio thread
+	*/
+	void sheduleUpdateForAudioThreadIR();
 
 private:
 
@@ -79,15 +109,42 @@ private:
 
 	AConvolutionEngine * liveEngine{ &tdConvolution };
 
+	/*
+		the offline IR is the impulse response currently loaded but fe
+	*/
+
+	bool irNeedsSwap{ false }; 
 	std::mutex irSwapMutex;
 
-	bool irNeedsSwap{ false }; // if true, we need to swap the live IR with a newly loaded IR
+	ImpulseResponse offlineIR;
 
-	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// the ir
-	std::unique_ptr<ImpulseResponse> cachedLoadedIR{ nullptr };
+	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// impulse response used in audio thread
+	std::unique_ptr<ImpulseResponse> cachedSwapIR{ nullptr };	// impulse response used for sawpping the live one
 
+	struct 
+	{
+		juce::AudioParameterBool *monoIR;
+		juce::AudioParameterBool *normalize;
+		juce::AudioParameterBool *fadeOut;
+		juce::AudioParameterChoice *smooth;
+		juce::AudioParameterBool *invert;
+		juce::AudioParameterBool *minPhase;
+
+
+	} parameters;
+
+	// normally would be a list and something more sophisticated but in this case, we only need that one notification
+	ImpulseResponseUpdateListener * irListener{ nullptr };
 
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HpeqAudioProcessor)
+
+	
+};
+
+class JuceFourierTransformFactory : public AFourierTransformFactory
+{
+	// Inherited via AFourierTransformFactory
+	virtual AFourierTransform * createFourierTransform(unsigned int order) const override;
 };

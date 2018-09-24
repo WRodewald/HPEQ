@@ -44,3 +44,33 @@ void JuceFourierTransform::performIFFT(std::complex<float>* in, std::complex<flo
 	}
 }
 
+void JuceFourierTransform::performFFTInPlace(std::complex<float>* buffer)
+{
+	for (int i = 0; i < getSize(); i++)
+	{
+		bufferIn[i] = buffer[i];
+	}
+
+	fft.perform(bufferIn.data(), bufferOut.data(), false);
+
+	for (int i = 0; i < getSize(); i++)
+	{
+		buffer[i] = bufferOut[i];
+	}
+}
+
+void JuceFourierTransform::performIFFTInPlace(std::complex<float>* buffer)
+{
+	for (int i = 0; i < getSize(); i++)
+	{
+		bufferIn[i] = buffer[i];
+	}
+
+	fft.perform(bufferIn.data(), bufferOut.data(), true);
+
+	for (int i = 0; i < getSize(); i++)
+	{
+		buffer[i] = bufferOut[i];
+	}
+}
+

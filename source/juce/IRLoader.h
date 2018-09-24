@@ -23,5 +23,5 @@ public:
 
 
 private:
-	ImpulseResponse loadedIR{ {1},{1} };
+	ImpulseResponse loadedIR;
 };

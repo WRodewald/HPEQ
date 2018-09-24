@@ -14,9 +14,7 @@ public:
 		@param order The order of the fft where size (numer of samples / bins) is 2^order.
 	*/
 	inline AFourierTransform(unsigned int order);
-
-
-
+	
 	virtual ~AFourierTransform() = default;
 	
 	/**
@@ -34,6 +32,19 @@ public:
 	virtual void performIFFT(std::complex<float> *in, std::complex<float>* out) = 0;
 
 	/**
+		Performs the fft in-place. The implementation is required to not block or dynamically allocate memory.
+		@param buffer  input buffer of size 2^order
+	*/
+	virtual void performFFTInPlace(std::complex<float> *buffer) = 0;
+
+	/**
+		Performs the ifft in-place. The implementation is required to not block or dynamically allocate memory.
+		@param buffer  input buffer of size 2^order
+	*/
+	virtual void performIFFTInPlace(std::complex<float> *buffer) = 0;
+
+
+	/**
 		Returns the number of bins / sampleas
 	*/
 	inline unsigned int getSize()  const { return size; }
@@ -47,6 +58,7 @@ private:
 	unsigned int order;
 	unsigned int size;
 };
+
 
 inline AFourierTransform::AFourierTransform(unsigned int order) : order(order), size(1 << order)
 {}

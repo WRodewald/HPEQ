@@ -8,10 +8,16 @@
             file="Source/HPEQ/AConvolutionEngine.h"/>
       <FILE id="Rbho2D" name="AFourierTransform.h" compile="0" resource="0"
             file="Source/HPEQ/AFourierTransform.h"/>
+      <FILE id="p38JBI" name="AFourierTransformFactory.cpp" compile="1" resource="0"
+            file="source/hpeq/AFourierTransformFactory.cpp"/>
+      <FILE id="kopw2O" name="AFourierTransformFactory.h" compile="0" resource="0"
+            file="source/hpeq/AFourierTransformFactory.h"/>
       <FILE id="Fi2RFY" name="ImpulseResponse.h" compile="0" resource="0"
             file="Source/HPEQ/ImpulseResponse.h"/>
       <FILE id="xuksMU" name="ImpulseResponseConfig.h" compile="0" resource="0"
             file="Source/HPEQ/ImpulseResponseConfig.h"/>
+      <FILE id="tNkpHX" name="IRTools.cpp" compile="1" resource="0" file="source/hpeq/IRTools.cpp"/>
+      <FILE id="IRWXAN" name="IRTools.h" compile="0" resource="0" file="source/hpeq/IRTools.h"/>
       <FILE id="vLtv6g" name="StaticRingBuffer.h" compile="0" resource="0"
             file="Source/HPEQ/StaticRingBuffer.h"/>
       <FILE id="TANRbT" name="TimeDomainConvolution.cpp" compile="1" resource="0"
@@ -20,6 +26,10 @@
             file="Source/HPEQ/TimeDomainConvolution.h"/>
     </GROUP>
     <GROUP id="{3AE6FE1F-A288-89D5-BB89-857E2F024A76}" name="juce">
+      <FILE id="SlzbGs" name="ImpulseResponseViewComponent.cpp" compile="1"
+            resource="0" file="source/juce/ImpulseResponseViewComponent.cpp"/>
+      <FILE id="sinzuw" name="ImpulseResponseViewComponent.h" compile="0"
+            resource="0" file="source/juce/ImpulseResponseViewComponent.h"/>
       <FILE id="ksVs54" name="JuceFourierTransform.cpp" compile="1" resource="0"
             file="source/juce/JuceFourierTransform.cpp"/>
       <FILE id="x5kMRd" name="JuceFourierTransform.h" compile="0" resource="0"

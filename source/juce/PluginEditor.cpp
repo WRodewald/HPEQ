@@ -17,14 +17,18 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (600, 400);
 
-	setResizable(false, true);
-	
 
-	addAndMakeVisible(fileSelectorComponent);
+		
+	// add sub components
+	addAndMakeVisible(fileSelectorComponent);	
+	addAndMakeVisible(paramEditorComponent);
+	addAndMakeVisible(impulseResponseView);
 
-	addAndMakeVisible(resizeComponent);
+	bool makeResizable = true;
+	setResizable(true, makeResizable);
+	if (makeResizable) addAndMakeVisible(resizeComponent);
 
 	fileSelectorComponent.setImpulseResponseFile(processor.getIRFile());
 
@@ -32,10 +36,14 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 	{
 		processor.setIRFile(file);
 	};
+
+	processor.setIRUpdateListener(this);
+
 }
 
 HpeqAudioProcessorEditor::~HpeqAudioProcessorEditor()
 {
+	processor.setIRUpdateListener(nullptr);
 }
 
 //==============================================================================
@@ -48,9 +56,19 @@ void HpeqAudioProcessorEditor::paint (Graphics& g)
 
 void HpeqAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+	// This is generally where you'll want to lay out the positions of any
+	// subcomponents in your editor..
 
-	fileSelectorComponent.setSize(getWidth(), 30);
+	fileSelectorComponent.setBounds(200,0,getWidth()- 200, 30);
+
+	impulseResponseView.setBounds(200, 30, getWidth()- 200, getHeight()-30);
+
+	paramEditorComponent.setBounds(0, 0, 200, getHeight());
+
 	resizeComponent.setSize(getWidth(), getHeight());
+}
+
+void HpeqAudioProcessorEditor::setUpdateIR(const ImpulseResponse & ir)
+{
+	this->impulseResponseView.setImpulseResponse(ir);
 }

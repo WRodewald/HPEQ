@@ -10,6 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "../hpeq/IRTools.h"
 
 //==============================================================================
 HpeqAudioProcessor::HpeqAudioProcessor()
@@ -24,6 +25,23 @@ HpeqAudioProcessor::HpeqAudioProcessor()
                        )
 #endif
 {
+	unsigned int pid = 0;
+	addParameter(parameters.invert   = new AudioParameterBool("Invert",		"Invert IR", 0));
+	addParameter(parameters.minPhase = new AudioParameterBool("MinPhase", "Min Phase", 0));
+	addParameter(parameters.normalize = new AudioParameterBool("Norm",		"Normalize", 0));
+	addParameter(parameters.fadeOut   = new AudioParameterBool("FadeOut",	"Fade Out", 0));
+	addParameter(parameters.monoIR   = new AudioParameterBool("Mono",		"Mono IR", 0));
+	addParameter(parameters.smooth = new AudioParameterChoice("Smooth", "Octave Smooth", { "Off", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
+
+	parameters.minPhase->addListener(this);
+	parameters.monoIR->addListener(this);
+	parameters.invert->addListener(this);
+	parameters.normalize->addListener(this);
+	parameters.fadeOut->addListener(this);
+	
+	parameters.smooth->addListener(this);
+
+	AFourierTransformFactory::installStaticFactory(new JuceFourierTransformFactory());
 }
 
 HpeqAudioProcessor::~HpeqAudioProcessor()
@@ -145,7 +163,7 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
         buffer.clear (i, 0, buffer.getNumSamples());
 	
 	// thread savely update our cached impulse response
-	updateLiveIR();
+	updateAudioThreadIR();
 
 	// get pointers
 	auto lRead  = buffer.getReadPointer(0);
@@ -186,7 +204,8 @@ void HpeqAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 	{
 		if (xmlState->hasTagName("IRFile"))
 		{
-			setIRFile(xmlState->getStringAttribute("Path"));
+			if(xmlState->hasAttribute("Path") && (xmlState->getStringAttribute("Path") != ""))
+				setIRFile(xmlState->getStringAttribute("Path"));
 		}
 	}
 }
@@ -196,14 +215,9 @@ void HpeqAudioProcessor::setIRFile(juce::File file)
 
 	this->irFile = file;
 	irLoader.loadImpulseResponse(irFile);
-
-	{
-		std::lock_guard<std::mutex> lock(irSwapMutex);
 	
-		cachedLoadedIR = std::unique_ptr<ImpulseResponse>(new ImpulseResponse(irLoader.getImpulseResponse()));
+	updateAndPreProcessIR();
 
-		irNeedsSwap = true; 
-	}
 }
 
 juce::File HpeqAudioProcessor::getIRFile() const
@@ -211,17 +225,98 @@ juce::File HpeqAudioProcessor::getIRFile() const
 	return irFile;
 }
 
-void HpeqAudioProcessor::updateLiveIR()
+void HpeqAudioProcessor::setIRUpdateListener(ImpulseResponseUpdateListener * listener)
+{
+	this->irListener = listener;
+	if (irListener)
+	{
+		irListener->setUpdateIR(offlineIR);
+	}
+}
+
+void HpeqAudioProcessor::updateAndPreProcessIR()
+{
+	// get impulse response from file
+	offlineIR = irLoader.getImpulseResponse();
+
+
+	if (parameters.monoIR->get())
+	{
+		IRTools::makeMono(offlineIR);
+	}
+
+	if (parameters.normalize->get())
+	{
+		IRTools::normalize(offlineIR, getSampleRate());
+	}
+
+	if (parameters.fadeOut->get())
+	{
+		IRTools::fadeOut(offlineIR, getSampleRate());
+	}
+	
+	if (parameters.invert->get())
+	{
+		IRTools::invertMagResponse(offlineIR);
+	}
+
+	auto smoothValText = parameters.smooth->getCurrentValueAsText();
+
+	if (smoothValText == "1/5 Octave")
+	{
+		IRTools::octaveSmooth(offlineIR, 1.f / 5.f, getSampleRate());
+	}
+	else if (smoothValText == "1/3 Octave")
+	{
+		IRTools::octaveSmooth(offlineIR, 1.f / 3.f, getSampleRate());
+	}
+	else if (smoothValText == "1 Octave")
+	{
+		IRTools::octaveSmooth(offlineIR, 1.f, getSampleRate());
+	}
+
+
+
+	if (parameters.minPhase->get())
+	{
+		IRTools::makeMinPhase(offlineIR);
+	}
+	
+	if (irListener) irListener->setUpdateIR(offlineIR);
+
+	// notify about new impulse response
+	sheduleUpdateForAudioThreadIR();
+}
+
+void HpeqAudioProcessor::updateAudioThreadIR()
 {	
 	std::lock_guard<std::mutex> lock(irSwapMutex);
 
 	if (irNeedsSwap)
 	{
-		std::swap(cachedLiveIR, cachedLoadedIR);
+		std::swap(cachedLiveIR, cachedSwapIR);
 		irNeedsSwap = false;
 
 		tdConvolution.setImpulseResponse(cachedLiveIR.get());
 	}
+}
+
+void HpeqAudioProcessor::sheduleUpdateForAudioThreadIR()
+{
+	std::lock_guard<std::mutex> lock(irSwapMutex);
+
+	cachedSwapIR = std::unique_ptr<ImpulseResponse>(new ImpulseResponse(offlineIR));
+
+	irNeedsSwap = true;
+}
+
+void HpeqAudioProcessor::parameterValueChanged(int parameterIndex, float newValue)
+{
+	updateAndPreProcessIR();
+}
+
+void HpeqAudioProcessor::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)
+{
 }
 
 //==============================================================================
@@ -229,4 +324,9 @@ void HpeqAudioProcessor::updateLiveIR()
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new HpeqAudioProcessor();
+}
+
+AFourierTransform * JuceFourierTransformFactory::createFourierTransform(unsigned int order) const
+{
+	return new JuceFourierTransform(order);
 }
