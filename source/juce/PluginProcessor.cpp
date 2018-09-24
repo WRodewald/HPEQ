@@ -8,9 +8,13 @@
   ==============================================================================
 */
 
+
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "../hpeq/IRTools.h"
+
+
 
 //==============================================================================
 HpeqAudioProcessor::HpeqAudioProcessor()
@@ -32,6 +36,7 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 	addParameter(parameters.fadeOut   = new AudioParameterBool("FadeOut",	"Fade Out", 0));
 	addParameter(parameters.monoIR   = new AudioParameterBool("Mono",		"Mono IR", 0));
 	addParameter(parameters.smooth = new AudioParameterChoice("Smooth", "Octave Smooth", { "Off", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
+	addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
 
 	parameters.minPhase->addListener(this);
 	parameters.monoIR->addListener(this);
@@ -41,7 +46,6 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 	
 	parameters.smooth->addListener(this);
 
-	AFourierTransformFactory::installStaticFactory(new JuceFourierTransformFactory());
 }
 
 HpeqAudioProcessor::~HpeqAudioProcessor()
@@ -172,8 +176,22 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
 	auto lWrite = buffer.getWritePointer(0);
 	auto rWrite = buffer.getWritePointer(1);
 
-	// process live IR
-	liveEngine->process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+
+	auto currentEngine = parameters.engine->getCurrentChoiceName();
+
+	if (currentEngine == "Time Domain")
+	{
+		this->tdConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+	}
+	else if (currentEngine == "Brute FFT")
+	{
+		this->fftConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+	}
+	else if (currentEngine == "Part FFT")
+	{
+		// ToDo: replace with partitioned FFT convolution
+		this->fftConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+	}
 }
 
 //==============================================================================
@@ -298,6 +316,7 @@ void HpeqAudioProcessor::updateAudioThreadIR()
 		irNeedsSwap = false;
 
 		tdConvolution.setImpulseResponse(cachedLiveIR.get());
+		fftConvolution.setImpulseResponse(cachedLiveIR.get());
 	}
 }
 

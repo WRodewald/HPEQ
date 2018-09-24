@@ -59,11 +59,11 @@ void HpeqAudioProcessorEditor::resized()
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
 
-	fileSelectorComponent.setBounds(200,0,getWidth()- 200, 30);
+	fileSelectorComponent.setBounds(300,0,getWidth()- 300, 30);
 
-	impulseResponseView.setBounds(200, 30, getWidth()- 200, getHeight()-30);
+	impulseResponseView.setBounds(300, 30, getWidth()- 300 - 2, getHeight()-30 - 2);
 
-	paramEditorComponent.setBounds(0, 0, 200, getHeight());
+	paramEditorComponent.setBounds(0, 0, 300, getHeight());
 
 	resizeComponent.setSize(getWidth(), getHeight());
 }

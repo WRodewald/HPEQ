@@ -12,10 +12,12 @@
             file="source/hpeq/AFourierTransformFactory.cpp"/>
       <FILE id="kopw2O" name="AFourierTransformFactory.h" compile="0" resource="0"
             file="source/hpeq/AFourierTransformFactory.h"/>
+      <FILE id="FRChCW" name="FFTConvolution.cpp" compile="1" resource="0"
+            file="source/hpeq/FFTConvolution.cpp"/>
+      <FILE id="tkqRcU" name="FFTConvolution.h" compile="0" resource="0"
+            file="source/hpeq/FFTConvolution.h"/>
       <FILE id="Fi2RFY" name="ImpulseResponse.h" compile="0" resource="0"
             file="Source/HPEQ/ImpulseResponse.h"/>
-      <FILE id="xuksMU" name="ImpulseResponseConfig.h" compile="0" resource="0"
-            file="Source/HPEQ/ImpulseResponseConfig.h"/>
       <FILE id="tNkpHX" name="IRTools.cpp" compile="1" resource="0" file="source/hpeq/IRTools.cpp"/>
       <FILE id="IRWXAN" name="IRTools.h" compile="0" resource="0" file="source/hpeq/IRTools.h"/>
       <FILE id="vLtv6g" name="StaticRingBuffer.h" compile="0" resource="0"

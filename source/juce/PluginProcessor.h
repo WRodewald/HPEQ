@@ -18,8 +18,16 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "IRLoader.h"
 #include "../hpeq/TimeDomainConvolution.h"
+#include "../hpeq/FFTConvolution.h"
 #include "../hpeq/AFourierTransformFactory.h"
 #include "JuceFourierTransform.h"
+
+class JuceFourierTransformFactory : public AFourierTransformFactory
+{
+	// Inherited via AFourierTransformFactory
+	virtual AFourierTransform * createFourierTransform(unsigned int order) const override;
+};
+
 
 class ImpulseResponseUpdateListener
 {
@@ -83,6 +91,7 @@ protected:
 
 private:
 
+
 	/**
 		runs impulse response pre processing
 	*/
@@ -101,13 +110,16 @@ private:
 
 private:
 
+
+	AFourierTransformFactory * engine { AFourierTransformFactory::installStaticFactory(new JuceFourierTransformFactory()) };
+
 	juce::File irFile;
 
 	IRLoader irLoader;
 
 	TimeDomainConvolution<ConvMaxSize> tdConvolution;
+	FFTConvolution<ConvMaxSize> fftConvolution;
 
-	AConvolutionEngine * liveEngine{ &tdConvolution };
 
 	/*
 		the offline IR is the impulse response currently loaded but fe
@@ -130,6 +142,8 @@ private:
 		juce::AudioParameterBool *invert;
 		juce::AudioParameterBool *minPhase;
 
+		juce::AudioParameterChoice *engine;
+
 
 	} parameters;
 
@@ -143,8 +157,3 @@ private:
 	
 };
 
-class JuceFourierTransformFactory : public AFourierTransformFactory
-{
-	// Inherited via AFourierTransformFactory
-	virtual AFourierTransform * createFourierTransform(unsigned int order) const override;
-};

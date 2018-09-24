@@ -10,7 +10,7 @@ class AFourierTransformFactory
 {
 
 public:
-	static void installStaticFactory(AFourierTransformFactory * factory);
+	static AFourierTransformFactory * installStaticFactory(AFourierTransformFactory * factory);
 
 	static AFourierTransform * FourierTransform(unsigned int order);
 

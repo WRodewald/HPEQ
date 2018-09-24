@@ -1,13 +1,15 @@
 #include "AFourierTransformFactory.h"
 
-std::unique_ptr<const AFourierTransformFactory> AFourierTransformFactory::factoryInstance = nullptr;
+std::unique_ptr<const AFourierTransformFactory> AFourierTransformFactory::factoryInstance;
 
-void AFourierTransformFactory::installStaticFactory(AFourierTransformFactory * factory)
+AFourierTransformFactory * AFourierTransformFactory::installStaticFactory(AFourierTransformFactory * factory)
 {
 	factoryInstance = std::unique_ptr<AFourierTransformFactory>(factory);
+	return factory;
 }
 
 AFourierTransform * AFourierTransformFactory::FourierTransform(unsigned int order)
 {
 	if (factoryInstance) return factoryInstance->createFourierTransform(order);
+	return nullptr;
 }
