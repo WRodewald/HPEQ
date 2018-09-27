@@ -30,21 +30,25 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 #endif
 {
 	unsigned int pid = 0;
-	addParameter(parameters.invert   = new AudioParameterBool("Invert",		"Invert IR", 0));
-	addParameter(parameters.minPhase = new AudioParameterBool("MinPhase", "Min Phase", 0));
-	addParameter(parameters.normalize = new AudioParameterBool("Norm",		"Normalize", 0));
-	addParameter(parameters.fadeOut   = new AudioParameterBool("FadeOut",	"Fade Out", 0));
-	addParameter(parameters.monoIR   = new AudioParameterBool("Mono",		"Mono IR", 0));
-	addParameter(parameters.smooth = new AudioParameterChoice("Smooth", "Octave Smooth", { "Off", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
-	addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
+	addParameter(parameters.invert		= new AudioParameterBool("Invert",		"Invert IR", 0));
+	addParameter(parameters.minPhase	= new AudioParameterBool("MinPhase", "Min Phase", 0));
+	addParameter(parameters.normalize	= new AudioParameterBool("Norm",		"Normalize", 0));
+	addParameter(parameters.fadeOut		= new AudioParameterBool("FadeOut",	"Fade Out", 0));
+	addParameter(parameters.monoIR		= new AudioParameterBool("Mono",		"Mono IR", 0));
+	addParameter(parameters.warp		= new AudioParameterFloat("Warp", "Warp", -1, +1, 0));
+	addParameter(parameters.smooth		= new AudioParameterChoice("Smooth", "Octave Smooth", { "Off", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
+	addParameter(parameters.engine		= new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
+	addParameter(parameters.partitions	= new AudioParameterInt("Partitions", "Partitions",0,5,0));
 
 	parameters.minPhase->addListener(this);
 	parameters.monoIR->addListener(this);
 	parameters.invert->addListener(this);
 	parameters.normalize->addListener(this);
 	parameters.fadeOut->addListener(this);
+	parameters.warp->addListener(this);
 	
 	parameters.smooth->addListener(this);
+	parameters.partitions->addListener(this);
 
 }
 
@@ -169,6 +173,8 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
 	// thread savely update our cached impulse response
 	updateAudioThreadIR();
 
+
+
 	// get pointers
 	auto lRead  = buffer.getReadPointer(0);
 	auto rRead  = buffer.getReadPointer(1);
@@ -190,7 +196,7 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
 	else if (currentEngine == "Part FFT")
 	{
 		// ToDo: replace with partitioned FFT convolution
-		this->fftConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+		this->fftPartConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
 	}
 }
 
@@ -232,10 +238,22 @@ void HpeqAudioProcessor::setIRFile(juce::File file)
 {
 
 	this->irFile = file;
-	irLoader.loadImpulseResponse(irFile);
+	auto errorCode = irLoader.loadImpulseResponse(irFile, ConvMaxSize);
 	
-	updateAndPreProcessIR();
-
+	if (errorCode == IRLoader::ErrorCode::NoError)
+	{
+		updateAndPreProcessIR();
+	}
+	else
+	{
+		if (auto editor = dynamic_cast<HpeqAudioProcessorEditor*>(getActiveEditor()))
+		{
+			auto messageCode = (errorCode == IRLoader::ErrorCode::ToLong) 
+				? HpeqAudioProcessorEditor::ErrorMessageType::IRToLong 
+				: HpeqAudioProcessorEditor::ErrorMessageType::IRCouldNotLoad;
+			editor->displayErrorMessage(messageCode);
+		}
+	}
 }
 
 juce::File HpeqAudioProcessor::getIRFile() const
@@ -278,6 +296,11 @@ void HpeqAudioProcessor::updateAndPreProcessIR()
 		IRTools::invertMagResponse(offlineIR);
 	}
 
+	if (parameters.warp->get() != 0)
+	{
+		offlineIR = IRTools::warp(offlineIR, parameters.warp->get(), offlineIR.getSize());
+	}
+
 	auto smoothValText = parameters.smooth->getCurrentValueAsText();
 
 	if (smoothValText == "1/5 Octave")
@@ -317,6 +340,10 @@ void HpeqAudioProcessor::updateAudioThreadIR()
 
 		tdConvolution.setImpulseResponse(cachedLiveIR.get());
 		fftConvolution.setImpulseResponse(cachedLiveIR.get());
+		fftPartConvolution.setImpulseResponse(cachedLiveIR.get());
+		//parFiltConvolution.setImpulseResponse(cachedLiveIR.get());
+		
+		fftPartConvolution.setPartitioningOrder(parameters.partitions->get());
 	}
 }
 
@@ -329,9 +356,14 @@ void HpeqAudioProcessor::sheduleUpdateForAudioThreadIR()
 	irNeedsSwap = true;
 }
 
-void HpeqAudioProcessor::parameterValueChanged(int parameterIndex, float newValue)
+void HpeqAudioProcessor::handleAsyncUpdate()
 {
 	updateAndPreProcessIR();
+}
+
+void HpeqAudioProcessor::parameterValueChanged(int parameterIndex, float newValue)
+{
+	triggerAsyncUpdate();
 }
 
 void HpeqAudioProcessor::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)

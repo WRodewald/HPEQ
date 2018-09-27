@@ -48,15 +48,10 @@ public:
 	inline const float * getRight() const;
 
 	/**
-		Returns left read pointer.
+		Returns left or right read pointer
+		@param idx the channel index, where idx == 0 will return left and idx == 1 will return the right channel
 	*/
-	inline const std::vector<float>& getLeftVector()  const;
-
-	/**
-		Returns right read pointer.
-	*/
-	inline const std::vector<float> &getRightVector() const;
-
+	inline const float * getChannel(unsigned int idx)  const;
 
 	/**
 		Returns left read/write pointer.
@@ -67,6 +62,29 @@ public:
 		Returns right read/write pointer.
 	*/
 	inline float * getRight();
+
+	/**
+		Returns left or right read pointer
+		@param idx the channel index, where idx == 0 will return left and idx == 1 will return the right channel
+	*/
+	inline float * getChannel(unsigned int idx);
+
+
+	/**
+		Returns left vector
+	*/
+	inline const std::vector<float>& getLeftVector()  const;
+
+	/**
+		Returns right vector
+	*/
+	inline const std::vector<float> &getRightVector() const;
+
+	/**
+		Returns left or right vector
+		@param idx the channel index, where idx == 0 will return left and idx == 1 will return the right channel
+	*/
+	inline const std::vector<float> & ImpulseResponse::getVector(unsigned int idx) const;
 
 	/**
 		Returns number of samples in the Impulse Response.
@@ -130,6 +148,18 @@ inline const std::vector<float> & ImpulseResponse::getRightVector() const
 	return right;
 }
 
+inline const std::vector<float> & ImpulseResponse::getVector(unsigned int idx) const
+{
+	assert(idx < 2);
+	return (idx == 0) ? left:  right;
+}
+
+inline const float * ImpulseResponse::getChannel(unsigned int idx) const
+{
+	assert(idx < 2);
+	return (idx == 0) ? left.data() : right.data();
+}
+
 inline float * ImpulseResponse::getLeft()
 {
 	return left.data();
@@ -138,6 +168,12 @@ inline float * ImpulseResponse::getLeft()
 inline float * ImpulseResponse::getRight()
 {
 	return right.data();
+}
+
+inline float * ImpulseResponse::getChannel(unsigned int idx)
+{
+	assert(idx < 2);
+	return (idx == 0) ? left.data() : right.data();
 }
 
 inline unsigned int ImpulseResponse::getSize() const

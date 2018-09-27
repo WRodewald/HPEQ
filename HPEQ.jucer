@@ -3,6 +3,482 @@
 <JUCERPROJECT id="YTvmLb" name="HPEQ" projectType="audioplug" jucerVersion="5.3.2"
               pluginCode="HPEQ" pluginManufacturerCode="AKT" pluginManufacturer="AKTTUBerlin">
   <MAINGROUP id="z6ETW7" name="HPEQ">
+    <GROUP id="{4C6F1740-E5F0-ED34-A861-AC2E07971090}" name="Eigen">
+      <GROUP id="{A5617376-3C4A-3951-7ACE-6260CF8974C0}" name="Cholesky">
+        <FILE id="bygCbu" name="LDLT.h" compile="0" resource="0" file="libs/Eigen/Cholesky/LDLT.h"/>
+        <FILE id="fHMcTQ" name="LLT.h" compile="0" resource="0" file="libs/Eigen/Cholesky/LLT.h"/>
+        <FILE id="EuaCVX" name="LLT_LAPACKE.h" compile="0" resource="0" file="libs/Eigen/Cholesky/LLT_LAPACKE.h"/>
+      </GROUP>
+      <GROUP id="{A4D93931-C000-7583-621D-B365755DF71D}" name="CholmodSupport">
+        <FILE id="LJoaQg" name="CholmodSupport.h" compile="0" resource="0"
+              file="libs/Eigen/CholmodSupport/CholmodSupport.h"/>
+      </GROUP>
+      <GROUP id="{956C5EB8-46D4-FCDB-B1BF-0F707768C775}" name="Core">
+        <GROUP id="{8893C7C2-AA80-2798-0FE7-A6B9DFE2400C}" name="arch">
+          <GROUP id="{0BB04339-666F-94A9-8B1F-4108A61AEE24}" name="AltiVec">
+            <FILE id="X8gCTq" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AltiVec/Complex.h"/>
+            <FILE id="Es3sgK" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AltiVec/MathFunctions.h"/>
+            <FILE id="zKKEb3" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AltiVec/PacketMath.h"/>
+          </GROUP>
+          <GROUP id="{C0F1C8A0-2258-F35D-5BD2-5DAB2AB2D622}" name="AVX">
+            <FILE id="hyZBcQ" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX/Complex.h"/>
+            <FILE id="kYT3NS" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX/MathFunctions.h"/>
+            <FILE id="fx5pG6" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX/PacketMath.h"/>
+            <FILE id="NJGwGJ" name="TypeCasting.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX/TypeCasting.h"/>
+          </GROUP>
+          <GROUP id="{B4D60D97-5841-907D-2CDE-F8BBDBF79864}" name="AVX512">
+            <FILE id="uSIb7t" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX512/MathFunctions.h"/>
+            <FILE id="Uenjn9" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/AVX512/PacketMath.h"/>
+          </GROUP>
+          <GROUP id="{F92C29B9-573B-D2C9-047D-013F54EEC740}" name="CUDA">
+            <FILE id="r8vZWR" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/CUDA/Complex.h"/>
+            <FILE id="K5yueK" name="Half.h" compile="0" resource="0" file="libs/Eigen/Core/arch/CUDA/Half.h"/>
+            <FILE id="ldi1kl" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/CUDA/MathFunctions.h"/>
+            <FILE id="nOrLKk" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/CUDA/PacketMath.h"/>
+            <FILE id="GA7mqO" name="PacketMathHalf.h" compile="0" resource="0"
+                  file="libs/Eigen/Core/arch/CUDA/PacketMathHalf.h"/>
+            <FILE id="gb6IMV" name="TypeCasting.h" compile="0" resource="0" file="libs/Eigen/Core/arch/CUDA/TypeCasting.h"/>
+          </GROUP>
+          <GROUP id="{A23DC8C9-911C-1B8A-8E48-1A92F1A9C332}" name="Default">
+            <FILE id="rzc9It" name="ConjHelper.h" compile="0" resource="0" file="libs/Eigen/Core/arch/Default/ConjHelper.h"/>
+            <FILE id="kyuyA3" name="Settings.h" compile="0" resource="0" file="libs/Eigen/Core/arch/Default/Settings.h"/>
+          </GROUP>
+          <GROUP id="{F11523AE-885E-0982-58EF-D44A17F96012}" name="NEON">
+            <FILE id="xyUneC" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/NEON/Complex.h"/>
+            <FILE id="dpCqsk" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/NEON/MathFunctions.h"/>
+            <FILE id="t7px7T" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/NEON/PacketMath.h"/>
+          </GROUP>
+          <GROUP id="{C398038C-CE8A-0EB8-E815-5D61CD3B32B4}" name="SSE">
+            <FILE id="R1Kdza" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/SSE/Complex.h"/>
+            <FILE id="Hl6yUC" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/SSE/MathFunctions.h"/>
+            <FILE id="WeMnGn" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/SSE/PacketMath.h"/>
+            <FILE id="kHsaN3" name="TypeCasting.h" compile="0" resource="0" file="libs/Eigen/Core/arch/SSE/TypeCasting.h"/>
+          </GROUP>
+          <GROUP id="{EBA9605F-3243-67A2-98DC-59BB40544E4A}" name="ZVector">
+            <FILE id="yQmz4n" name="Complex.h" compile="0" resource="0" file="libs/Eigen/Core/arch/ZVector/Complex.h"/>
+            <FILE id="v8NZGe" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/arch/ZVector/MathFunctions.h"/>
+            <FILE id="AX1RvE" name="PacketMath.h" compile="0" resource="0" file="libs/Eigen/Core/arch/ZVector/PacketMath.h"/>
+          </GROUP>
+        </GROUP>
+        <GROUP id="{065DDB15-0045-4093-42FD-E0C65CEBAE60}" name="functors">
+          <FILE id="cC9fYW" name="AssignmentFunctors.h" compile="0" resource="0"
+                file="libs/Eigen/Core/functors/AssignmentFunctors.h"/>
+          <FILE id="H3mz6O" name="BinaryFunctors.h" compile="0" resource="0"
+                file="libs/Eigen/Core/functors/BinaryFunctors.h"/>
+          <FILE id="SCIWoH" name="NullaryFunctors.h" compile="0" resource="0"
+                file="libs/Eigen/Core/functors/NullaryFunctors.h"/>
+          <FILE id="tNq3cy" name="StlFunctors.h" compile="0" resource="0" file="libs/Eigen/Core/functors/StlFunctors.h"/>
+          <FILE id="US79oC" name="TernaryFunctors.h" compile="0" resource="0"
+                file="libs/Eigen/Core/functors/TernaryFunctors.h"/>
+          <FILE id="VQUIk2" name="UnaryFunctors.h" compile="0" resource="0" file="libs/Eigen/Core/functors/UnaryFunctors.h"/>
+        </GROUP>
+        <GROUP id="{FC5C6867-9D53-4C00-6610-D0D205DD00E4}" name="products">
+          <FILE id="RJCFWL" name="GeneralBlockPanelKernel.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/GeneralBlockPanelKernel.h"/>
+          <FILE id="GmUISI" name="GeneralMatrixMatrix.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/GeneralMatrixMatrix.h"/>
+          <FILE id="wmdRwJ" name="GeneralMatrixMatrix_BLAS.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/GeneralMatrixMatrix_BLAS.h"/>
+          <FILE id="Bqptzb" name="GeneralMatrixMatrixTriangular.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/GeneralMatrixMatrixTriangular.h"/>
+          <FILE id="TpDwUy" name="GeneralMatrixMatrixTriangular_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/GeneralMatrixMatrixTriangular_BLAS.h"/>
+          <FILE id="dS4Il9" name="GeneralMatrixVector.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/GeneralMatrixVector.h"/>
+          <FILE id="UafFRG" name="GeneralMatrixVector_BLAS.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/GeneralMatrixVector_BLAS.h"/>
+          <FILE id="vyBboG" name="Parallelizer.h" compile="0" resource="0" file="libs/Eigen/Core/products/Parallelizer.h"/>
+          <FILE id="KVDFnn" name="SelfadjointMatrixMatrix.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/SelfadjointMatrixMatrix.h"/>
+          <FILE id="O4H2OP" name="SelfadjointMatrixMatrix_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/SelfadjointMatrixMatrix_BLAS.h"/>
+          <FILE id="PmWTKS" name="SelfadjointMatrixVector.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/SelfadjointMatrixVector.h"/>
+          <FILE id="ri57mT" name="SelfadjointMatrixVector_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/SelfadjointMatrixVector_BLAS.h"/>
+          <FILE id="HLi57N" name="SelfadjointProduct.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/SelfadjointProduct.h"/>
+          <FILE id="DCIWgN" name="SelfadjointRank2Update.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/SelfadjointRank2Update.h"/>
+          <FILE id="fW4o52" name="TriangularMatrixMatrix.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/TriangularMatrixMatrix.h"/>
+          <FILE id="f0umeG" name="TriangularMatrixMatrix_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/TriangularMatrixMatrix_BLAS.h"/>
+          <FILE id="l0OZ33" name="TriangularMatrixVector.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/TriangularMatrixVector.h"/>
+          <FILE id="hk5nSQ" name="TriangularMatrixVector_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/TriangularMatrixVector_BLAS.h"/>
+          <FILE id="U6zPye" name="TriangularSolverMatrix.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/TriangularSolverMatrix.h"/>
+          <FILE id="QtY0fG" name="TriangularSolverMatrix_BLAS.h" compile="0"
+                resource="0" file="libs/Eigen/Core/products/TriangularSolverMatrix_BLAS.h"/>
+          <FILE id="MnzXEi" name="TriangularSolverVector.h" compile="0" resource="0"
+                file="libs/Eigen/Core/products/TriangularSolverVector.h"/>
+        </GROUP>
+        <GROUP id="{621E98C7-FC9A-704E-59F0-34055BEE99ED}" name="util">
+          <FILE id="DpsUsY" name="BlasUtil.h" compile="0" resource="0" file="libs/Eigen/Core/util/BlasUtil.h"/>
+          <FILE id="RksGPG" name="Constants.h" compile="0" resource="0" file="libs/Eigen/Core/util/Constants.h"/>
+          <FILE id="Yj8mWT" name="DisableStupidWarnings.h" compile="0" resource="0"
+                file="libs/Eigen/Core/util/DisableStupidWarnings.h"/>
+          <FILE id="QX3dwc" name="ForwardDeclarations.h" compile="0" resource="0"
+                file="libs/Eigen/Core/util/ForwardDeclarations.h"/>
+          <FILE id="l05P4W" name="Macros.h" compile="0" resource="0" file="libs/Eigen/Core/util/Macros.h"/>
+          <FILE id="Q1vagW" name="Memory.h" compile="0" resource="0" file="libs/Eigen/Core/util/Memory.h"/>
+          <FILE id="cSZi5k" name="Meta.h" compile="0" resource="0" file="libs/Eigen/Core/util/Meta.h"/>
+          <FILE id="Ft7Yea" name="MKL_support.h" compile="0" resource="0" file="libs/Eigen/Core/util/MKL_support.h"/>
+          <FILE id="u0hpNO" name="NonMPL2.h" compile="0" resource="0" file="libs/Eigen/Core/util/NonMPL2.h"/>
+          <FILE id="S0pqd5" name="ReenableStupidWarnings.h" compile="0" resource="0"
+                file="libs/Eigen/Core/util/ReenableStupidWarnings.h"/>
+          <FILE id="EqWLJb" name="StaticAssert.h" compile="0" resource="0" file="libs/Eigen/Core/util/StaticAssert.h"/>
+          <FILE id="Kv7kbk" name="XprHelper.h" compile="0" resource="0" file="libs/Eigen/Core/util/XprHelper.h"/>
+        </GROUP>
+        <FILE id="fFdl9X" name="Array.h" compile="0" resource="0" file="libs/Eigen/Core/Array.h"/>
+        <FILE id="nYNaJe" name="ArrayBase.h" compile="0" resource="0" file="libs/Eigen/Core/ArrayBase.h"/>
+        <FILE id="KBgwMN" name="ArrayWrapper.h" compile="0" resource="0" file="libs/Eigen/Core/ArrayWrapper.h"/>
+        <FILE id="o3uXwv" name="Assign.h" compile="0" resource="0" file="libs/Eigen/Core/Assign.h"/>
+        <FILE id="d6HCHO" name="Assign_MKL.h" compile="0" resource="0" file="libs/Eigen/Core/Assign_MKL.h"/>
+        <FILE id="KXylwA" name="AssignEvaluator.h" compile="0" resource="0"
+              file="libs/Eigen/Core/AssignEvaluator.h"/>
+        <FILE id="KqKZYw" name="BandMatrix.h" compile="0" resource="0" file="libs/Eigen/Core/BandMatrix.h"/>
+        <FILE id="bWY07j" name="Block.h" compile="0" resource="0" file="libs/Eigen/Core/Block.h"/>
+        <FILE id="PQ4l7E" name="BooleanRedux.h" compile="0" resource="0" file="libs/Eigen/Core/BooleanRedux.h"/>
+        <FILE id="ASBoAs" name="CommaInitializer.h" compile="0" resource="0"
+              file="libs/Eigen/Core/CommaInitializer.h"/>
+        <FILE id="kHlswA" name="ConditionEstimator.h" compile="0" resource="0"
+              file="libs/Eigen/Core/ConditionEstimator.h"/>
+        <FILE id="OpOBRJ" name="CoreEvaluators.h" compile="0" resource="0"
+              file="libs/Eigen/Core/CoreEvaluators.h"/>
+        <FILE id="oq1Voa" name="CoreIterators.h" compile="0" resource="0" file="libs/Eigen/Core/CoreIterators.h"/>
+        <FILE id="RdoGZw" name="CwiseBinaryOp.h" compile="0" resource="0" file="libs/Eigen/Core/CwiseBinaryOp.h"/>
+        <FILE id="fgxbre" name="CwiseNullaryOp.h" compile="0" resource="0"
+              file="libs/Eigen/Core/CwiseNullaryOp.h"/>
+        <FILE id="SXKXb2" name="CwiseTernaryOp.h" compile="0" resource="0"
+              file="libs/Eigen/Core/CwiseTernaryOp.h"/>
+        <FILE id="qIlitr" name="CwiseUnaryOp.h" compile="0" resource="0" file="libs/Eigen/Core/CwiseUnaryOp.h"/>
+        <FILE id="I8EYC7" name="CwiseUnaryView.h" compile="0" resource="0"
+              file="libs/Eigen/Core/CwiseUnaryView.h"/>
+        <FILE id="VovDDH" name="DenseBase.h" compile="0" resource="0" file="libs/Eigen/Core/DenseBase.h"/>
+        <FILE id="DEZImc" name="DenseCoeffsBase.h" compile="0" resource="0"
+              file="libs/Eigen/Core/DenseCoeffsBase.h"/>
+        <FILE id="f325qR" name="DenseStorage.h" compile="0" resource="0" file="libs/Eigen/Core/DenseStorage.h"/>
+        <FILE id="YrtHRD" name="Diagonal.h" compile="0" resource="0" file="libs/Eigen/Core/Diagonal.h"/>
+        <FILE id="bfCSkl" name="DiagonalMatrix.h" compile="0" resource="0"
+              file="libs/Eigen/Core/DiagonalMatrix.h"/>
+        <FILE id="HttNbJ" name="DiagonalProduct.h" compile="0" resource="0"
+              file="libs/Eigen/Core/DiagonalProduct.h"/>
+        <FILE id="NrGqGC" name="Dot.h" compile="0" resource="0" file="libs/Eigen/Core/Dot.h"/>
+        <FILE id="PYLqnw" name="EigenBase.h" compile="0" resource="0" file="libs/Eigen/Core/EigenBase.h"/>
+        <FILE id="t8MuQ0" name="ForceAlignedAccess.h" compile="0" resource="0"
+              file="libs/Eigen/Core/ForceAlignedAccess.h"/>
+        <FILE id="ocgjL6" name="Fuzzy.h" compile="0" resource="0" file="libs/Eigen/Core/Fuzzy.h"/>
+        <FILE id="NII2UX" name="GeneralProduct.h" compile="0" resource="0"
+              file="libs/Eigen/Core/GeneralProduct.h"/>
+        <FILE id="gMqH2a" name="GenericPacketMath.h" compile="0" resource="0"
+              file="libs/Eigen/Core/GenericPacketMath.h"/>
+        <FILE id="ldnoyy" name="GlobalFunctions.h" compile="0" resource="0"
+              file="libs/Eigen/Core/GlobalFunctions.h"/>
+        <FILE id="rYM05V" name="Inverse.h" compile="0" resource="0" file="libs/Eigen/Core/Inverse.h"/>
+        <FILE id="n80Cqk" name="IO.h" compile="0" resource="0" file="libs/Eigen/Core/IO.h"/>
+        <FILE id="pH7QPy" name="Map.h" compile="0" resource="0" file="libs/Eigen/Core/Map.h"/>
+        <FILE id="gjHazl" name="MapBase.h" compile="0" resource="0" file="libs/Eigen/Core/MapBase.h"/>
+        <FILE id="mpuFuN" name="MathFunctions.h" compile="0" resource="0" file="libs/Eigen/Core/MathFunctions.h"/>
+        <FILE id="Nqc36o" name="MathFunctionsImpl.h" compile="0" resource="0"
+              file="libs/Eigen/Core/MathFunctionsImpl.h"/>
+        <FILE id="rSKAqQ" name="Matrix.h" compile="0" resource="0" file="libs/Eigen/Core/Matrix.h"/>
+        <FILE id="h7WXJw" name="MatrixBase.h" compile="0" resource="0" file="libs/Eigen/Core/MatrixBase.h"/>
+        <FILE id="HNX6aw" name="NestByValue.h" compile="0" resource="0" file="libs/Eigen/Core/NestByValue.h"/>
+        <FILE id="FPx28L" name="NoAlias.h" compile="0" resource="0" file="libs/Eigen/Core/NoAlias.h"/>
+        <FILE id="Ey2CjJ" name="NumTraits.h" compile="0" resource="0" file="libs/Eigen/Core/NumTraits.h"/>
+        <FILE id="mRKiZL" name="PermutationMatrix.h" compile="0" resource="0"
+              file="libs/Eigen/Core/PermutationMatrix.h"/>
+        <FILE id="WqhGFg" name="PlainObjectBase.h" compile="0" resource="0"
+              file="libs/Eigen/Core/PlainObjectBase.h"/>
+        <FILE id="VCzn0P" name="Product.h" compile="0" resource="0" file="libs/Eigen/Core/Product.h"/>
+        <FILE id="bAk6RS" name="ProductEvaluators.h" compile="0" resource="0"
+              file="libs/Eigen/Core/ProductEvaluators.h"/>
+        <FILE id="o3BGRL" name="Random.h" compile="0" resource="0" file="libs/Eigen/Core/Random.h"/>
+        <FILE id="siDQGN" name="Redux.h" compile="0" resource="0" file="libs/Eigen/Core/Redux.h"/>
+        <FILE id="l1kxCk" name="Ref.h" compile="0" resource="0" file="libs/Eigen/Core/Ref.h"/>
+        <FILE id="Jzs5RG" name="Replicate.h" compile="0" resource="0" file="libs/Eigen/Core/Replicate.h"/>
+        <FILE id="NxZpgU" name="ReturnByValue.h" compile="0" resource="0" file="libs/Eigen/Core/ReturnByValue.h"/>
+        <FILE id="bAWPWo" name="Reverse.h" compile="0" resource="0" file="libs/Eigen/Core/Reverse.h"/>
+        <FILE id="P9tgwf" name="Select.h" compile="0" resource="0" file="libs/Eigen/Core/Select.h"/>
+        <FILE id="mezGvp" name="SelfAdjointView.h" compile="0" resource="0"
+              file="libs/Eigen/Core/SelfAdjointView.h"/>
+        <FILE id="hgvbQi" name="SelfCwiseBinaryOp.h" compile="0" resource="0"
+              file="libs/Eigen/Core/SelfCwiseBinaryOp.h"/>
+        <FILE id="wvdoNi" name="Solve.h" compile="0" resource="0" file="libs/Eigen/Core/Solve.h"/>
+        <FILE id="uH9rIU" name="SolverBase.h" compile="0" resource="0" file="libs/Eigen/Core/SolverBase.h"/>
+        <FILE id="TpPUHe" name="SolveTriangular.h" compile="0" resource="0"
+              file="libs/Eigen/Core/SolveTriangular.h"/>
+        <FILE id="yUrzbZ" name="StableNorm.h" compile="0" resource="0" file="libs/Eigen/Core/StableNorm.h"/>
+        <FILE id="qOSFkn" name="Stride.h" compile="0" resource="0" file="libs/Eigen/Core/Stride.h"/>
+        <FILE id="uBUrQ7" name="Swap.h" compile="0" resource="0" file="libs/Eigen/Core/Swap.h"/>
+        <FILE id="HK6Hvx" name="Transpose.h" compile="0" resource="0" file="libs/Eigen/Core/Transpose.h"/>
+        <FILE id="AUxlwu" name="Transpositions.h" compile="0" resource="0"
+              file="libs/Eigen/Core/Transpositions.h"/>
+        <FILE id="LHtklB" name="TriangularMatrix.h" compile="0" resource="0"
+              file="libs/Eigen/Core/TriangularMatrix.h"/>
+        <FILE id="KpAmj9" name="VectorBlock.h" compile="0" resource="0" file="libs/Eigen/Core/VectorBlock.h"/>
+        <FILE id="F42OU8" name="VectorwiseOp.h" compile="0" resource="0" file="libs/Eigen/Core/VectorwiseOp.h"/>
+        <FILE id="fEHOVQ" name="Visitor.h" compile="0" resource="0" file="libs/Eigen/Core/Visitor.h"/>
+      </GROUP>
+      <GROUP id="{B700CB11-92BC-8D2D-BEE6-9F2C72A16FC7}" name="Eigenvalues">
+        <FILE id="gmAu8r" name="ComplexEigenSolver.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/ComplexEigenSolver.h"/>
+        <FILE id="ZBcpi7" name="ComplexSchur.h" compile="0" resource="0" file="libs/Eigen/Eigenvalues/ComplexSchur.h"/>
+        <FILE id="uBQfgw" name="ComplexSchur_LAPACKE.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/ComplexSchur_LAPACKE.h"/>
+        <FILE id="iJDJOx" name="EigenSolver.h" compile="0" resource="0" file="libs/Eigen/Eigenvalues/EigenSolver.h"/>
+        <FILE id="bJvseR" name="GeneralizedEigenSolver.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/GeneralizedEigenSolver.h"/>
+        <FILE id="M4Pne1" name="GeneralizedSelfAdjointEigenSolver.h" compile="0"
+              resource="0" file="libs/Eigen/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h"/>
+        <FILE id="juiLqO" name="HessenbergDecomposition.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/HessenbergDecomposition.h"/>
+        <FILE id="eoaqZE" name="MatrixBaseEigenvalues.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/MatrixBaseEigenvalues.h"/>
+        <FILE id="gWhKpq" name="RealQZ.h" compile="0" resource="0" file="libs/Eigen/Eigenvalues/RealQZ.h"/>
+        <FILE id="ZnWTCv" name="RealSchur.h" compile="0" resource="0" file="libs/Eigen/Eigenvalues/RealSchur.h"/>
+        <FILE id="mlplaP" name="RealSchur_LAPACKE.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/RealSchur_LAPACKE.h"/>
+        <FILE id="MOE0in" name="SelfAdjointEigenSolver.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/SelfAdjointEigenSolver.h"/>
+        <FILE id="Y8AjCg" name="SelfAdjointEigenSolver_LAPACKE.h" compile="0"
+              resource="0" file="libs/Eigen/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h"/>
+        <FILE id="MJQlx3" name="Tridiagonalization.h" compile="0" resource="0"
+              file="libs/Eigen/Eigenvalues/Tridiagonalization.h"/>
+      </GROUP>
+      <GROUP id="{4685F091-05CA-40F1-FCCA-147C15922B76}" name="Geometry">
+        <GROUP id="{81694347-67DE-6DA6-3EE4-B443F63CAB89}" name="arch">
+          <FILE id="VHreN7" name="Geometry_SSE.h" compile="0" resource="0" file="libs/Eigen/Geometry/arch/Geometry_SSE.h"/>
+        </GROUP>
+        <FILE id="P7WC38" name="AlignedBox.h" compile="0" resource="0" file="libs/Eigen/Geometry/AlignedBox.h"/>
+        <FILE id="CyhsTq" name="AngleAxis.h" compile="0" resource="0" file="libs/Eigen/Geometry/AngleAxis.h"/>
+        <FILE id="WTZnam" name="EulerAngles.h" compile="0" resource="0" file="libs/Eigen/Geometry/EulerAngles.h"/>
+        <FILE id="pvKKaR" name="Homogeneous.h" compile="0" resource="0" file="libs/Eigen/Geometry/Homogeneous.h"/>
+        <FILE id="RNOEwI" name="Hyperplane.h" compile="0" resource="0" file="libs/Eigen/Geometry/Hyperplane.h"/>
+        <FILE id="bjtY85" name="OrthoMethods.h" compile="0" resource="0" file="libs/Eigen/Geometry/OrthoMethods.h"/>
+        <FILE id="R1Q5kH" name="ParametrizedLine.h" compile="0" resource="0"
+              file="libs/Eigen/Geometry/ParametrizedLine.h"/>
+        <FILE id="ijNhO2" name="Quaternion.h" compile="0" resource="0" file="libs/Eigen/Geometry/Quaternion.h"/>
+        <FILE id="nh37dn" name="Rotation2D.h" compile="0" resource="0" file="libs/Eigen/Geometry/Rotation2D.h"/>
+        <FILE id="hr6Ya8" name="RotationBase.h" compile="0" resource="0" file="libs/Eigen/Geometry/RotationBase.h"/>
+        <FILE id="OFfRCy" name="Scaling.h" compile="0" resource="0" file="libs/Eigen/Geometry/Scaling.h"/>
+        <FILE id="UoSx3w" name="Transform.h" compile="0" resource="0" file="libs/Eigen/Geometry/Transform.h"/>
+        <FILE id="HRs2VB" name="Translation.h" compile="0" resource="0" file="libs/Eigen/Geometry/Translation.h"/>
+        <FILE id="VhZqqN" name="Umeyama.h" compile="0" resource="0" file="libs/Eigen/Geometry/Umeyama.h"/>
+      </GROUP>
+      <GROUP id="{E1F9B5B5-4F10-D120-BB5D-2B208D252E50}" name="Householder">
+        <FILE id="wATnXe" name="BlockHouseholder.h" compile="0" resource="0"
+              file="libs/Eigen/Householder/BlockHouseholder.h"/>
+        <FILE id="DbmjMx" name="Householder.h" compile="0" resource="0" file="libs/Eigen/Householder/Householder.h"/>
+        <FILE id="SNPQJn" name="HouseholderSequence.h" compile="0" resource="0"
+              file="libs/Eigen/Householder/HouseholderSequence.h"/>
+      </GROUP>
+      <GROUP id="{4CF39AEE-BC39-267A-08E4-37CB1264C582}" name="IterativeLinearSolvers">
+        <FILE id="u2lRjA" name="BasicPreconditioners.h" compile="0" resource="0"
+              file="libs/Eigen/IterativeLinearSolvers/BasicPreconditioners.h"/>
+        <FILE id="rpJF4R" name="BiCGSTAB.h" compile="0" resource="0" file="libs/Eigen/IterativeLinearSolvers/BiCGSTAB.h"/>
+        <FILE id="Vi447R" name="ConjugateGradient.h" compile="0" resource="0"
+              file="libs/Eigen/IterativeLinearSolvers/ConjugateGradient.h"/>
+        <FILE id="TR2btg" name="IncompleteCholesky.h" compile="0" resource="0"
+              file="libs/Eigen/IterativeLinearSolvers/IncompleteCholesky.h"/>
+        <FILE id="ZoGeAe" name="IncompleteLUT.h" compile="0" resource="0" file="libs/Eigen/IterativeLinearSolvers/IncompleteLUT.h"/>
+        <FILE id="tReK5G" name="IterativeSolverBase.h" compile="0" resource="0"
+              file="libs/Eigen/IterativeLinearSolvers/IterativeSolverBase.h"/>
+        <FILE id="M3Usl5" name="LeastSquareConjugateGradient.h" compile="0"
+              resource="0" file="libs/Eigen/IterativeLinearSolvers/LeastSquareConjugateGradient.h"/>
+        <FILE id="u9dzv2" name="SolveWithGuess.h" compile="0" resource="0"
+              file="libs/Eigen/IterativeLinearSolvers/SolveWithGuess.h"/>
+      </GROUP>
+      <GROUP id="{6AE2B4D9-AB43-658F-7071-4DBF5FD72E02}" name="Jacobi">
+        <FILE id="uzeekm" name="Jacobi.h" compile="0" resource="0" file="libs/Eigen/Jacobi/Jacobi.h"/>
+      </GROUP>
+      <GROUP id="{0C6A512C-BFB5-8BB9-6FAE-4A94E00BB6D7}" name="LU">
+        <GROUP id="{BDA6995D-8983-9FDC-E8F4-163EDBF8D860}" name="arch">
+          <FILE id="I1Rdfi" name="Inverse_SSE.h" compile="0" resource="0" file="libs/Eigen/LU/arch/Inverse_SSE.h"/>
+        </GROUP>
+        <FILE id="JYn4xu" name="Determinant.h" compile="0" resource="0" file="libs/Eigen/LU/Determinant.h"/>
+        <FILE id="XEvh30" name="FullPivLU.h" compile="0" resource="0" file="libs/Eigen/LU/FullPivLU.h"/>
+        <FILE id="adUNtf" name="InverseImpl.h" compile="0" resource="0" file="libs/Eigen/LU/InverseImpl.h"/>
+        <FILE id="ryiuqh" name="PartialPivLU.h" compile="0" resource="0" file="libs/Eigen/LU/PartialPivLU.h"/>
+        <FILE id="MH3yS7" name="PartialPivLU_LAPACKE.h" compile="0" resource="0"
+              file="libs/Eigen/LU/PartialPivLU_LAPACKE.h"/>
+      </GROUP>
+      <GROUP id="{2EB66FE5-AF6B-7E84-285E-099BBC679786}" name="MetisSupport">
+        <FILE id="dg7kJC" name="MetisSupport.h" compile="0" resource="0" file="libs/Eigen/MetisSupport/MetisSupport.h"/>
+      </GROUP>
+      <GROUP id="{D656FC52-8268-60A2-65BF-3FB681F0F5F6}" name="misc">
+        <FILE id="DhhlhQ" name="blas.h" compile="0" resource="0" file="libs/Eigen/misc/blas.h"/>
+        <FILE id="ciVl9q" name="Image.h" compile="0" resource="0" file="libs/Eigen/misc/Image.h"/>
+        <FILE id="zABEsi" name="Kernel.h" compile="0" resource="0" file="libs/Eigen/misc/Kernel.h"/>
+        <FILE id="g9fhRQ" name="lapack.h" compile="0" resource="0" file="libs/Eigen/misc/lapack.h"/>
+        <FILE id="YbGd6x" name="lapacke.h" compile="0" resource="0" file="libs/Eigen/misc/lapacke.h"/>
+        <FILE id="Wy6sL5" name="lapacke_mangling.h" compile="0" resource="0"
+              file="libs/Eigen/misc/lapacke_mangling.h"/>
+        <FILE id="UlpvzO" name="RealSvd2x2.h" compile="0" resource="0" file="libs/Eigen/misc/RealSvd2x2.h"/>
+      </GROUP>
+      <GROUP id="{DA9181CB-01A9-F1D0-0A23-892BF7CF8364}" name="OrderingMethods">
+        <FILE id="vKtV0r" name="Amd.h" compile="0" resource="0" file="libs/Eigen/OrderingMethods/Amd.h"/>
+        <FILE id="hSKjQG" name="Eigen_Colamd.h" compile="0" resource="0" file="libs/Eigen/OrderingMethods/Eigen_Colamd.h"/>
+        <FILE id="T0zx4z" name="Ordering.h" compile="0" resource="0" file="libs/Eigen/OrderingMethods/Ordering.h"/>
+      </GROUP>
+      <GROUP id="{E3A2BEB5-CA6A-E216-CB7A-B5B6FBB41C20}" name="PardisoSupport">
+        <FILE id="j09nkJ" name="PardisoSupport.h" compile="0" resource="0"
+              file="libs/Eigen/PardisoSupport/PardisoSupport.h"/>
+      </GROUP>
+      <GROUP id="{5091426D-1D07-B085-BC8D-E83FBBA859C2}" name="PaStiXSupport">
+        <FILE id="QG0JqE" name="PaStiXSupport.h" compile="0" resource="0" file="libs/Eigen/PaStiXSupport/PaStiXSupport.h"/>
+      </GROUP>
+      <GROUP id="{F5B9090C-C902-F9E2-0676-5BDF8DE33674}" name="plugins">
+        <FILE id="gNOLnl" name="ArrayCwiseBinaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/ArrayCwiseBinaryOps.h"/>
+        <FILE id="t2BWFw" name="ArrayCwiseUnaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/ArrayCwiseUnaryOps.h"/>
+        <FILE id="SeMyLY" name="BlockMethods.h" compile="0" resource="0" file="libs/Eigen/plugins/BlockMethods.h"/>
+        <FILE id="eLhbqK" name="CommonCwiseBinaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/CommonCwiseBinaryOps.h"/>
+        <FILE id="QcB3mD" name="CommonCwiseUnaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/CommonCwiseUnaryOps.h"/>
+        <FILE id="uoqkNI" name="MatrixCwiseBinaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/MatrixCwiseBinaryOps.h"/>
+        <FILE id="xqI1Tm" name="MatrixCwiseUnaryOps.h" compile="0" resource="0"
+              file="libs/Eigen/plugins/MatrixCwiseUnaryOps.h"/>
+      </GROUP>
+      <GROUP id="{45DBB165-F774-40AE-A5E9-715CD4BCCF37}" name="QR">
+        <FILE id="aRlCjT" name="ColPivHouseholderQR.h" compile="0" resource="0"
+              file="libs/Eigen/QR/ColPivHouseholderQR.h"/>
+        <FILE id="J6EIRW" name="ColPivHouseholderQR_LAPACKE.h" compile="0"
+              resource="0" file="libs/Eigen/QR/ColPivHouseholderQR_LAPACKE.h"/>
+        <FILE id="smwEQX" name="CompleteOrthogonalDecomposition.h" compile="0"
+              resource="0" file="libs/Eigen/QR/CompleteOrthogonalDecomposition.h"/>
+        <FILE id="kGNj1u" name="FullPivHouseholderQR.h" compile="0" resource="0"
+              file="libs/Eigen/QR/FullPivHouseholderQR.h"/>
+        <FILE id="FmwvD4" name="HouseholderQR.h" compile="0" resource="0" file="libs/Eigen/QR/HouseholderQR.h"/>
+        <FILE id="WqrN2S" name="HouseholderQR_LAPACKE.h" compile="0" resource="0"
+              file="libs/Eigen/QR/HouseholderQR_LAPACKE.h"/>
+      </GROUP>
+      <GROUP id="{29B979B9-BB13-3A59-424A-395822D1648C}" name="SparseCholesky">
+        <FILE id="Vo4ryD" name="SimplicialCholesky.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCholesky/SimplicialCholesky.h"/>
+        <FILE id="yy5OY9" name="SimplicialCholesky_impl.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCholesky/SimplicialCholesky_impl.h"/>
+      </GROUP>
+      <GROUP id="{D6C3F737-00AD-7485-E609-0DA6187D2E3D}" name="SparseCore">
+        <FILE id="sp4kCl" name="AmbiVector.h" compile="0" resource="0" file="libs/Eigen/SparseCore/AmbiVector.h"/>
+        <FILE id="Dbpswl" name="CompressedStorage.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/CompressedStorage.h"/>
+        <FILE id="eU5z4w" name="ConservativeSparseSparseProduct.h" compile="0"
+              resource="0" file="libs/Eigen/SparseCore/ConservativeSparseSparseProduct.h"/>
+        <FILE id="T59VRc" name="MappedSparseMatrix.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/MappedSparseMatrix.h"/>
+        <FILE id="DQU5kz" name="SparseAssign.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseAssign.h"/>
+        <FILE id="llYkXz" name="SparseBlock.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseBlock.h"/>
+        <FILE id="T8CwHY" name="SparseColEtree.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseColEtree.h"/>
+        <FILE id="aYqmi1" name="SparseCompressedBase.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseCompressedBase.h"/>
+        <FILE id="bXP1IY" name="SparseCwiseBinaryOp.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseCwiseBinaryOp.h"/>
+        <FILE id="q2pml9" name="SparseCwiseUnaryOp.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseCwiseUnaryOp.h"/>
+        <FILE id="fM396F" name="SparseDenseProduct.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseDenseProduct.h"/>
+        <FILE id="bC5LUZ" name="SparseDiagonalProduct.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseDiagonalProduct.h"/>
+        <FILE id="hTeRem" name="SparseDot.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseDot.h"/>
+        <FILE id="luSiPe" name="SparseFuzzy.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseFuzzy.h"/>
+        <FILE id="zKZYhH" name="SparseMap.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseMap.h"/>
+        <FILE id="bsByd3" name="SparseMatrix.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseMatrix.h"/>
+        <FILE id="iyUXZ1" name="SparseMatrixBase.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseMatrixBase.h"/>
+        <FILE id="ijrcVO" name="SparsePermutation.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparsePermutation.h"/>
+        <FILE id="Aw0HYI" name="SparseProduct.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseProduct.h"/>
+        <FILE id="pg3c5f" name="SparseRedux.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseRedux.h"/>
+        <FILE id="KI7vdg" name="SparseRef.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseRef.h"/>
+        <FILE id="PTfzgH" name="SparseSelfAdjointView.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseSelfAdjointView.h"/>
+        <FILE id="NtQa6Y" name="SparseSolverBase.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseSolverBase.h"/>
+        <FILE id="gPXq2t" name="SparseSparseProductWithPruning.h" compile="0"
+              resource="0" file="libs/Eigen/SparseCore/SparseSparseProductWithPruning.h"/>
+        <FILE id="z2Wk3v" name="SparseTranspose.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseTranspose.h"/>
+        <FILE id="BBsQJ3" name="SparseTriangularView.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/SparseTriangularView.h"/>
+        <FILE id="Mu0hz3" name="SparseUtil.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseUtil.h"/>
+        <FILE id="Pd2Frl" name="SparseVector.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseVector.h"/>
+        <FILE id="UMsYrF" name="SparseView.h" compile="0" resource="0" file="libs/Eigen/SparseCore/SparseView.h"/>
+        <FILE id="SZ9RyY" name="TriangularSolver.h" compile="0" resource="0"
+              file="libs/Eigen/SparseCore/TriangularSolver.h"/>
+      </GROUP>
+      <GROUP id="{7BA3255E-8E39-A550-784B-1887CB44076C}" name="SparseLU">
+        <FILE id="vcQGtO" name="SparseLU.h" compile="0" resource="0" file="libs/Eigen/SparseLU/SparseLU.h"/>
+        <FILE id="winzB1" name="SparseLU_column_bmod.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_column_bmod.h"/>
+        <FILE id="qT01lb" name="SparseLU_column_dfs.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_column_dfs.h"/>
+        <FILE id="MHPvG0" name="SparseLU_copy_to_ucol.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_copy_to_ucol.h"/>
+        <FILE id="KQJ1NT" name="SparseLU_gemm_kernel.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_gemm_kernel.h"/>
+        <FILE id="sdoh4N" name="SparseLU_heap_relax_snode.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_heap_relax_snode.h"/>
+        <FILE id="iwv36d" name="SparseLU_kernel_bmod.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_kernel_bmod.h"/>
+        <FILE id="G30j1D" name="SparseLU_Memory.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_Memory.h"/>
+        <FILE id="Q2DoQW" name="SparseLU_panel_bmod.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_panel_bmod.h"/>
+        <FILE id="LzVAuQ" name="SparseLU_panel_dfs.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_panel_dfs.h"/>
+        <FILE id="V3i9Kd" name="SparseLU_pivotL.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_pivotL.h"/>
+        <FILE id="AeguT8" name="SparseLU_pruneL.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_pruneL.h"/>
+        <FILE id="SDeWsn" name="SparseLU_relax_snode.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_relax_snode.h"/>
+        <FILE id="jN6Mwg" name="SparseLU_Structs.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_Structs.h"/>
+        <FILE id="lZaggQ" name="SparseLU_SupernodalMatrix.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_SupernodalMatrix.h"/>
+        <FILE id="rB7AUW" name="SparseLU_Utils.h" compile="0" resource="0"
+              file="libs/Eigen/SparseLU/SparseLU_Utils.h"/>
+        <FILE id="aPXPw7" name="SparseLUImpl.h" compile="0" resource="0" file="libs/Eigen/SparseLU/SparseLUImpl.h"/>
+      </GROUP>
+      <GROUP id="{860838AF-B9A2-D2BB-9FA8-1D1573347416}" name="SparseQR">
+        <FILE id="nR1j1S" name="SparseQR.h" compile="0" resource="0" file="libs/Eigen/SparseQR/SparseQR.h"/>
+      </GROUP>
+      <GROUP id="{1AAABA23-5B1E-F11C-EE3E-7B162B249715}" name="SPQRSupport">
+        <FILE id="sh5UlV" name="SuiteSparseQRSupport.h" compile="0" resource="0"
+              file="libs/Eigen/SPQRSupport/SuiteSparseQRSupport.h"/>
+      </GROUP>
+      <GROUP id="{3328C9A1-3512-77CE-129B-03A3B5B44686}" name="StlSupport">
+        <FILE id="KRei4I" name="details.h" compile="0" resource="0" file="libs/Eigen/StlSupport/details.h"/>
+        <FILE id="HS3Znd" name="StdDeque.h" compile="0" resource="0" file="libs/Eigen/StlSupport/StdDeque.h"/>
+        <FILE id="SbHOct" name="StdList.h" compile="0" resource="0" file="libs/Eigen/StlSupport/StdList.h"/>
+        <FILE id="YRIH7l" name="StdVector.h" compile="0" resource="0" file="libs/Eigen/StlSupport/StdVector.h"/>
+      </GROUP>
+      <GROUP id="{24503223-67B7-5EFE-491E-A39A0BDC14B4}" name="SuperLUSupport">
+        <FILE id="KjwYkv" name="SuperLUSupport.h" compile="0" resource="0"
+              file="libs/Eigen/SuperLUSupport/SuperLUSupport.h"/>
+      </GROUP>
+      <GROUP id="{49040DE8-67E8-251F-3B70-D5551D0F54EA}" name="SVD">
+        <FILE id="D5d8Lq" name="BDCSVD.h" compile="0" resource="0" file="libs/Eigen/SVD/BDCSVD.h"/>
+        <FILE id="pN7Zyd" name="JacobiSVD.h" compile="0" resource="0" file="libs/Eigen/SVD/JacobiSVD.h"/>
+        <FILE id="OgNlgh" name="JacobiSVD_LAPACKE.h" compile="0" resource="0"
+              file="libs/Eigen/SVD/JacobiSVD_LAPACKE.h"/>
+        <FILE id="ylbivW" name="SVDBase.h" compile="0" resource="0" file="libs/Eigen/SVD/SVDBase.h"/>
+        <FILE id="y6mQVh" name="UpperBidiagonalization.h" compile="0" resource="0"
+              file="libs/Eigen/SVD/UpperBidiagonalization.h"/>
+      </GROUP>
+      <GROUP id="{69A327E1-7771-B695-7223-978ACAACC3B7}" name="UmfPackSupport">
+        <FILE id="arUEY3" name="UmfPackSupport.h" compile="0" resource="0"
+              file="libs/Eigen/UmfPackSupport/UmfPackSupport.h"/>
+      </GROUP>
+    </GROUP>
     <GROUP id="{EA120079-477D-A3B8-7591-9173D9AEB368}" name="HPEQ">
       <FILE id="vDEbjt" name="AConvolutionEngine.h" compile="0" resource="0"
             file="Source/HPEQ/AConvolutionEngine.h"/>
@@ -12,18 +488,21 @@
             file="source/hpeq/AFourierTransformFactory.cpp"/>
       <FILE id="kopw2O" name="AFourierTransformFactory.h" compile="0" resource="0"
             file="source/hpeq/AFourierTransformFactory.h"/>
-      <FILE id="FRChCW" name="FFTConvolution.cpp" compile="1" resource="0"
-            file="source/hpeq/FFTConvolution.cpp"/>
       <FILE id="tkqRcU" name="FFTConvolution.h" compile="0" resource="0"
             file="source/hpeq/FFTConvolution.h"/>
+      <FILE id="YjhL2z" name="FFTPartConvolution.h" compile="0" resource="0"
+            file="Source/HPEQ/FFTPartConvolution.h"/>
       <FILE id="Fi2RFY" name="ImpulseResponse.h" compile="0" resource="0"
             file="Source/HPEQ/ImpulseResponse.h"/>
       <FILE id="tNkpHX" name="IRTools.cpp" compile="1" resource="0" file="source/hpeq/IRTools.cpp"/>
       <FILE id="IRWXAN" name="IRTools.h" compile="0" resource="0" file="source/hpeq/IRTools.h"/>
+      <FILE id="AUVrLO" name="ParFiltConvolution.cpp" compile="1" resource="0"
+            file="source/hpeq/ParFiltConvolution.cpp"/>
+      <FILE id="l0dnSP" name="ParFiltConvolution.h" compile="0" resource="0"
+            file="source/hpeq/ParFiltConvolution.h"/>
+      <FILE id="rRchlq" name="StaticQueue.h" compile="0" resource="0" file="Source/HPEQ/StaticQueue.h"/>
       <FILE id="vLtv6g" name="StaticRingBuffer.h" compile="0" resource="0"
             file="Source/HPEQ/StaticRingBuffer.h"/>
-      <FILE id="TANRbT" name="TimeDomainConvolution.cpp" compile="1" resource="0"
-            file="Source/HPEQ/TimeDomainConvolution.cpp"/>
       <FILE id="XMusVe" name="TimeDomainConvolution.h" compile="0" resource="0"
             file="Source/HPEQ/TimeDomainConvolution.h"/>
     </GROUP>

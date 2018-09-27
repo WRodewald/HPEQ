@@ -37,7 +37,7 @@ private:
 	static float getTimeDomainYScale(const ImpulseResponse & ir);
 
 
-	static std::pair<float, float> getFreyDomainDBScale(const ImpulseResponse & ir);
+	static std::pair<float, float> getFrequencyDomainDBScale(const ImpulseResponse & ir);
 
 private:
 	

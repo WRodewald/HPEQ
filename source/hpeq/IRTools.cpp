@@ -23,7 +23,7 @@ void IRTools::octaveSmooth(ImpulseResponse & ir, float width, float fs)
 {
 	width = std::max(width, 0.f);
 
-	assert(isPow2(ir));
+	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size = ir.getSize();
@@ -98,7 +98,7 @@ void IRTools::octaveSmooth(ImpulseResponse & ir, float width, float fs)
 
 void IRTools::normalize(ImpulseResponse & ir, float fs)
 {
-	assert(isPow2(ir));
+	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size = ir.getSize();
@@ -142,20 +142,41 @@ void IRTools::normalize(ImpulseResponse & ir, float fs)
 
 	for (int c = 0; c < 2; c++)
 	{
+		std::vector<std::complex<float>> buffer;
 		auto x = (c == 0) ? ir.getLeft() : ir.getRight();
 
 		for (int i = 0; i < size; i++)
 		{
-			x[i] /= avg;
+			buffer.push_back(x[i]);
 		}
+
+		// FFT
+		transform->performFFTInPlace(buffer.data());
+
+		// calculate wheighted average
+		float xSum = 0;
+		float wSum = 0;
+		for (int i = 0; i < buffer.size(); i++)
+		{
+			buffer[i] /= avg;
+		}
+		
+		transform->performIFFTInPlace(buffer.data());
+
+		for (int i = 0; i < buffer.size(); i++)
+		{
+			x[i] = buffer[i].real();
+		}
+
 	}
+
 	delete transform;
 }
 
 
 void IRTools::fadeOut(ImpulseResponse & ir, float fs)
 {
-	assert(isPow2(ir));
+	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size = ir.getSize();
@@ -219,7 +240,7 @@ void IRTools::fadeOut(ImpulseResponse & ir, float fs)
 
 void IRTools::makeMinPhase(ImpulseResponse & ir)
 {
-	assert(isPow2(ir));
+	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size   = ir.getSize();
@@ -278,9 +299,45 @@ void IRTools::makeMinPhase(ImpulseResponse & ir)
 	delete transform;
 }
 
+ImpulseResponse IRTools::warp(const ImpulseResponse & ir, float lambda, unsigned int len)
+{
+	std::vector<float> out[2];
+
+	assert((-1 <= lambda) && (lambda <= 1));
+	
+	for (auto c : { 0,1 })
+	{
+		auto in = ir.getVector(c);
+
+
+		std::vector<float> temp;
+		out[c].resize(len);
+		temp.resize(len);
+		temp[0] = 1;
+		out[c][0] = in[0];
+
+		for (int i = 1; i < len; i++)
+		{
+			AllpassFirstOrer<float> filter;
+			filter.setCoeff(lambda);
+
+			// filter temp buffer
+			for (auto & bin : temp) bin = filter.tick(bin);
+
+			// accumulate on output
+			for (int k = 0; k < len; k++)
+			{
+				out[c][k] += in[i] * temp[k];
+			}
+		}
+	}
+
+	return ImpulseResponse(out[0], out[1], ir.getSampleRate());
+}
+
 void IRTools::invertMagResponse(ImpulseResponse & ir)
 {
-	assert(isPow2(ir));
+	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size = ir.getSize();
@@ -322,7 +379,7 @@ void IRTools::invertMagResponse(ImpulseResponse & ir)
 
 void IRTools::zeroPadToPow2(ImpulseResponse & ir)
 {
-	if (!isPow2(ir))
+	if (!isPow2(ir.getSize()))
 	{
 		auto newSize = nextPow2(ir.getSize());
 		
@@ -346,9 +403,9 @@ unsigned int IRTools::nextPow2(unsigned int x)
 	return (x <= 1) ? 1 : (2 * nextPow2((x + 1) >> 1));
 }
 
-bool IRTools::isPow2(const ImpulseResponse & ir)
+bool IRTools::isPow2(unsigned int x)
 {
-	return ir.getSize() == nextPow2(ir.getSize());
+	return x == nextPow2(x);
 }
 
 float IRTools::frequencyWeight(float f, float fs, float fHP, float fLP, unsigned int order)

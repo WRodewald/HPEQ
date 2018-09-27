@@ -72,3 +72,20 @@ void HpeqAudioProcessorEditor::setUpdateIR(const ImpulseResponse & ir)
 {
 	this->impulseResponseView.setImpulseResponse(ir);
 }
+
+void HpeqAudioProcessorEditor::displayErrorMessage(ErrorMessageType type)
+{
+	std::string message;
+	switch (type)
+	{
+		case ErrorMessageType::IRCouldNotLoad:
+		{
+			message = "Impulse Response File could not be loaded.";
+		} break;
+		case ErrorMessageType::IRToLong:
+		{
+			message =  getName().toStdString() + " only supports Impulse Responses with a maximum length of " + std::to_string(ConvMaxSize);
+		} break;
+	}
+	AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Erro", message);
+}

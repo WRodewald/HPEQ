@@ -22,6 +22,13 @@
 class HpeqAudioProcessorEditor  : public AudioProcessorEditor,  public ImpulseResponseUpdateListener
 {
 public:
+
+	enum class ErrorMessageType
+	{
+		IRToLong,
+		IRCouldNotLoad
+	};
+public:
     HpeqAudioProcessorEditor (HpeqAudioProcessor&);
     ~HpeqAudioProcessorEditor();
 
@@ -30,6 +37,8 @@ public:
     void resized() override;
 
 	virtual void setUpdateIR(const ImpulseResponse & ir) override;
+
+	void displayErrorMessage(ErrorMessageType type);
 
 private:
     // This reference is provided as a quick way for your editor to

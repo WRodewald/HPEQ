@@ -72,7 +72,7 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 	auto transform = AFourierTransformFactory::FourierTransform(std::log2(fftSize));
 
 
-	auto dBRange = getFreyDomainDBScale(ir);
+	auto dBRange = getFrequencyDomainDBScale(ir);
 
 	auto dBMax = dBRange.second;
 	auto dBMin = dBRange.first;
@@ -143,7 +143,7 @@ void ImpulseResponseViewComponent::paintImpulseResponse(Graphics & g, juce::Rect
 	auto yMin = -yMax;
 
 	auto tMin = 0;
-	auto tMax = ir.getSize() / ir.getSampleRate();
+	auto tMax = (ir.getSize()-1) / ir.getSampleRate();
 
 
 	auto t2X = [=](float t)
@@ -201,7 +201,7 @@ float ImpulseResponseViewComponent::getTimeDomainYScale(const ImpulseResponse & 
 
 }
 
-std::pair<float, float> ImpulseResponseViewComponent::getFreyDomainDBScale(const ImpulseResponse & ir)
+std::pair<float, float> ImpulseResponseViewComponent::getFrequencyDomainDBScale(const ImpulseResponse & ir)
 {
 
 	if (ir.getSize() < 2) return { -12,+12 };
@@ -225,7 +225,7 @@ std::pair<float, float> ImpulseResponseViewComponent::getFreyDomainDBScale(const
 
 		transform->performFFTInPlace(fftBuffer.data());
 
-		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
+		for (unsigned int i = 0; i <= 0.5 * fftBuffer.size(); i++)
 		{
 			auto dB = 20.f * std::log10(abs(fftBuffer[i]));
 
@@ -237,6 +237,12 @@ std::pair<float, float> ImpulseResponseViewComponent::getFreyDomainDBScale(const
 
 	minDB = std::floor(minDB / 12) * 12;
 	maxDB = std::ceil(maxDB / 12) * 12;
+
+	if (maxDB <= minDB)
+	{
+		maxDB += 12;
+		minDB -= 12;
+	}
 
 	return { minDB, maxDB };
 }

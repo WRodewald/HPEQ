@@ -19,8 +19,11 @@
 #include "IRLoader.h"
 #include "../hpeq/TimeDomainConvolution.h"
 #include "../hpeq/FFTConvolution.h"
+#include "../hpeq/FFTPartConvolution.h"
 #include "../hpeq/AFourierTransformFactory.h"
 #include "JuceFourierTransform.h"
+
+#include "../hpeq/ParFiltConvolution.h"
 
 class JuceFourierTransformFactory : public AFourierTransformFactory
 {
@@ -38,7 +41,7 @@ public:
 //==============================================================================
 /**
 */
-class HpeqAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
+class HpeqAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener, public AsyncUpdater
 {
 public:
     //==============================================================================
@@ -89,6 +92,10 @@ protected:
 	virtual void parameterValueChanged(int parameterIndex, float newValue) override;
 	virtual void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 
+	// Inherited via AsyncUpdater
+	virtual void handleAsyncUpdate() override;
+
+
 private:
 
 
@@ -117,8 +124,10 @@ private:
 
 	IRLoader irLoader;
 
-	TimeDomainConvolution<ConvMaxSize> tdConvolution;
-	FFTConvolution<ConvMaxSize> fftConvolution;
+	TimeDomainConvolution<ConvMaxSize>  tdConvolution;
+	FFTConvolution<ConvMaxSize>			fftConvolution;
+	FFTPartConvolution<ConvMaxSize>		fftPartConvolution;
+	//ParFiltConvolution					parFiltConvolution;
 
 
 	/*
@@ -139,10 +148,15 @@ private:
 		juce::AudioParameterBool *normalize;
 		juce::AudioParameterBool *fadeOut;
 		juce::AudioParameterChoice *smooth;
+		juce::AudioParameterFloat *warp;
+
+
 		juce::AudioParameterBool *invert;
 		juce::AudioParameterBool *minPhase;
 
 		juce::AudioParameterChoice *engine;
+
+		juce::AudioParameterInt * partitions;
 
 
 	} parameters;

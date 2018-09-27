@@ -1,7 +1,7 @@
 #include "IRLoader.h"
 #include "../hpeq/IRTools.h"
 
-void IRLoader::loadImpulseResponse(juce::File file)
+IRLoader::ErrorCode IRLoader::loadImpulseResponse(juce::File file, unsigned int maxSupportedLength)
 {
 	try
 	{
@@ -11,13 +11,16 @@ void IRLoader::loadImpulseResponse(juce::File file)
 		AudioSampleBuffer buffer(reader->numChannels, reader->lengthInSamples);
 		reader->read(&buffer, 0, reader->lengthInSamples, 0, true, true);
 
+		if (reader->lengthInSamples > maxSupportedLength) return ErrorCode::ToLong;
+
 		this->loadedIR = ImpulseResponse(buffer.getReadPointer(0), buffer.getReadPointer(1), buffer.getNumSamples(), reader->sampleRate);
 		IRTools::zeroPadToPow2(loadedIR);
+
+		return ErrorCode::NoError;
 	}
 	catch (const std::exception & e)
-	{
-		this->loadedIR = ImpulseResponse();
-	}
+	{}
+	return ErrorCode::Other;
 }
 
 ImpulseResponse IRLoader::getImpulseResponse() const
