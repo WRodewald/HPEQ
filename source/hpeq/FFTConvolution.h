@@ -26,8 +26,8 @@ template<unsigned int MaxSize>
 class FFTConvolution : public AConvolutionEngine
 {
 private:
-	static const unsigned int MinOrder = 5;
-	static const unsigned int MaxOrder = 1 + IRTools::staticLog2(MaxSize);
+    static const unsigned int MaxOrder = 1 + IRTools::staticLog2(MaxSize);
+	unsigned int MinOrder = 5;
 
 public:
 	FFTConvolution();

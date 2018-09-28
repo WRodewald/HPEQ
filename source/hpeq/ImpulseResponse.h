@@ -84,7 +84,7 @@ public:
 		Returns left or right vector
 		@param idx the channel index, where idx == 0 will return left and idx == 1 will return the right channel
 	*/
-	inline const std::vector<float> & ImpulseResponse::getVector(unsigned int idx) const;
+	inline const std::vector<float> & getVector(unsigned int idx) const;
 
 	/**
 		Returns number of samples in the Impulse Response.
