@@ -14,10 +14,25 @@ namespace IRTools
 {
 
 	/**
+		Function resamples the impulse response. The implementation uses a sinc convolution approach for impulse responses 
+		length N <= 4096. Above that, a hann windowed sinc with lenghth 4096 is used.
+		@param ir the impulse response
+		@param targetSampleRate the targeted sample rate
+	*/
+	ImpulseResponse resample(const ImpulseResponse & ir, float targetSampleRate);
+
+	/**
 		Function removes stereo information from the impulse response
 		@param ir the impulse response
 	*/
 	void makeMono(ImpulseResponse & ir);
+
+	/**
+		Function removes silent trails
+		@param ir the impulse response
+	*/
+	ImpulseResponse truncate(const ImpulseResponse & ir, float dbThreshold, bool keepPow2);
+
 
 	/**
 	Function smoothes the frequency response with a octave-width band
@@ -31,17 +46,15 @@ namespace IRTools
 		Function normalizes the frequency response overall amplitude
 		Only works with impulse responses with size 2^n.
 		@param ir the impulse response
-		@param fs the sample rate
 	*/
-	void normalize(ImpulseResponse & ir, float fs);
+	void normalize(ImpulseResponse & ir);
 
 	/**
 	Function fades out the frequency response at very low and high frequencies.
 	Only works with impulse responses with size 2^n.
 	@param ir the impulse response
-	@param fs the sample rate
 	*/
-	void fadeOut(ImpulseResponse & ir, float fs);
+	void fadeOut(ImpulseResponse & ir, float fHP, float fLP, unsigned int hpfOrder, unsigned int lpfOrder);
 
 
 	/**
@@ -95,13 +108,15 @@ namespace IRTools
 
 	/**
 		Function calculates a frequency wheight in terms of a Nth order 2nd-order band pass (1st order high pass / lowpass in sereis)
-		@param f frequency to calculate the weight at
-		@param fs the sample rate
-		@param fLP lowpass frequency
-		@param fHP highpass frequency
-		@param order the order of the filters H = (HLP^order * HHP^order)
+		@param f			frequency to calculate the weight at
+		@param fs			the sample rate
+		@param fLP			lowpass frequency
+		@param fHP			highpass frequency
+		@param hpfOrder		the order of the highpass filters 
+		@param lpfOrder		the order of the lowpass filters
 	*/
-	float frequencyWeight(float f, float fs, float fHP, float fLP, unsigned int order);
+	float frequencyWeight(float f, float fs, float fHP, float fLP, unsigned int hpfOrder, unsigned int lpfOrder);
+
 	
 	/*
 		A simple first order allpass filter implementation. With coeff c, filter response is

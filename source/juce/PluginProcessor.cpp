@@ -29,23 +29,25 @@ HpeqAudioProcessor::HpeqAudioProcessor()
                        )
 #endif
 {
+	
 	unsigned int pid = 0;
 	addParameter(parameters.invert		= new AudioParameterBool("Invert",		"Invert IR", 0));
-	addParameter(parameters.minPhase	= new AudioParameterBool("MinPhase", "Min Phase", 0));
+	addParameter(parameters.minPhase	= new AudioParameterBool("MinPhase",	"Min Phase", 0));
 	addParameter(parameters.normalize	= new AudioParameterBool("Norm",		"Normalize", 0));
-	addParameter(parameters.fadeOut		= new AudioParameterBool("FadeOut",	"Fade Out", 0));
+	addParameter(parameters.lowFade		= new AudioParameterChoice("LowFade",	"Low Fade",	 { "Off", "20Hz", "50Hz", "100Hz" },0));
+	addParameter(parameters.highFade	= new AudioParameterChoice("HighFade",	"High Fade", { "Off", "5kHz", "10kHz", "20kHz" }, 0));
 	addParameter(parameters.monoIR		= new AudioParameterBool("Mono",		"Mono IR", 0));
-	addParameter(parameters.warp		= new AudioParameterFloat("Warp", "Warp", -1, +1, 0));
-	addParameter(parameters.smooth		= new AudioParameterChoice("Smooth", "Octave Smooth", { "Off", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
-	addParameter(parameters.engine		= new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
-	addParameter(parameters.partitions	= new AudioParameterInt("Partitions", "Partitions",0,5,0));
+	addParameter(parameters.smooth		= new AudioParameterChoice("Smooth",	"Smooth", { "Off", "1/12 Octave", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
+	addParameter(parameters.engine		= new AudioParameterChoice("Engine",	"Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
+	addParameter(parameters.partitions	= new AudioParameterInt("Partitions",	"Partitions",0,7,0));
+
 
 	parameters.minPhase->addListener(this);
 	parameters.monoIR->addListener(this);
 	parameters.invert->addListener(this);
 	parameters.normalize->addListener(this);
-	parameters.fadeOut->addListener(this);
-	parameters.warp->addListener(this);
+	parameters.lowFade->addListener(this);
+	parameters.highFade->addListener(this);
 	
 	parameters.smooth->addListener(this);
 	parameters.partitions->addListener(this);
@@ -121,8 +123,18 @@ void HpeqAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void HpeqAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+	auto errorCode = irLoader.updateSampleRate(sampleRate, ConvMaxSize);
+
+	if (errorCode != IRLoader::ErrorCode::NoError)
+	{
+		if (auto editor = dynamic_cast<HpeqAudioProcessorEditor*>(getActiveEditor()))
+		{
+			auto messageCode = (errorCode == IRLoader::ErrorCode::ToLong)
+				? HpeqAudioProcessorEditor::ErrorMessageType::IRToLong
+				: HpeqAudioProcessorEditor::ErrorMessageType::IRCouldNotLoad;
+			editor->displayErrorMessage(messageCode);
+		}
+	}
 }
 
 void HpeqAudioProcessor::releaseResources()
@@ -214,8 +226,15 @@ AudioProcessorEditor* HpeqAudioProcessor::createEditor()
 //==============================================================================
 void HpeqAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	std::unique_ptr<XmlElement> xml = std::unique_ptr<XmlElement>(new XmlElement("IRFile"));
-	xml->setAttribute("Path", irFile.getFullPathName());
+	std::unique_ptr<XmlElement> xml = std::unique_ptr<XmlElement>(new XmlElement("State"));
+	xml->setAttribute("IRPath", irFile.getFullPathName());
+
+	for (auto param : getParameters())
+	{
+		auto paramWID = dynamic_cast<AudioProcessorParameterWithID*>(param);
+		if (paramWID) xml->setAttribute(paramWID->paramID, paramWID->getValue());
+	}
+	
 	copyXmlToBinary(*xml, destData);
 
 }
@@ -226,10 +245,26 @@ void HpeqAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 	if (xmlState.get() != nullptr)
 	{
-		if (xmlState->hasTagName("IRFile"))
+		if (xmlState->hasTagName("State"))
 		{
-			if(xmlState->hasAttribute("Path") && (xmlState->getStringAttribute("Path") != ""))
-				setIRFile(xmlState->getStringAttribute("Path"));
+			if(xmlState->hasAttribute("IRPath") && (xmlState->getStringAttribute("IRPath") != ""))
+				setIRFile(xmlState->getStringAttribute("IRPath"));
+
+			for (int i = 0; i < xmlState->getNumAttributes(); i++)
+			{
+				for (auto param : getParameters())
+				{
+					auto paramWID = dynamic_cast<AudioProcessorParameterWithID*>(param);
+					if (!paramWID) continue;
+					
+					if (paramWID->paramID == xmlState->getAttributeName(i))
+					{
+						float val = CharacterFunctions::readDoubleValue(xmlState->getAttributeValue(i).getCharPointer());
+						paramWID->setValue(val);
+
+					}
+				}
+			}
 		}
 	}
 }
@@ -283,26 +318,50 @@ void HpeqAudioProcessor::updateAndPreProcessIR()
 
 	if (parameters.normalize->get())
 	{
-		IRTools::normalize(offlineIR, getSampleRate());
+		IRTools::normalize(offlineIR);
 	}
 
-	if (parameters.fadeOut->get())
+	auto lowFadeText  = parameters.lowFade->getCurrentValueAsText();
+	auto highFadeText = parameters.highFade->getCurrentValueAsText();
+
+	if (lowFadeText != "Off" || highFadeText != "Off")
 	{
-		IRTools::fadeOut(offlineIR, getSampleRate());
-	}
+		std::map<juce::String, float> lowFadeFrequencyMap{ 
+			{"Off", 0},
+			{"20Hz", 20 },
+			{"50Hz", 50 },
+			{"100Hz", 100 } };
 	
+		std::map<juce::String, float> highFadeFrequencyMap{ 
+			{"Off", 0},
+			{"5kHz",  5000 },
+			{"10kHz", 10000 },
+			{"20kHz", 20000 } };
+
+		unsigned int hpOrder = (lowFadeText != "Off") ? 2 : 0;
+		unsigned int lpOrder = (highFadeText != "Off") ? 2 : 0;
+
+		float hpFreq = lowFadeFrequencyMap[lowFadeText];
+		float lpFreq = highFadeFrequencyMap[highFadeText];
+
+
+
+		IRTools::fadeOut(offlineIR, hpFreq, lpFreq, hpOrder, lpOrder);
+	}
+		
 	if (parameters.invert->get())
 	{
 		IRTools::invertMagResponse(offlineIR);
 	}
 
-	if (parameters.warp->get() != 0)
-	{
-		offlineIR = IRTools::warp(offlineIR, parameters.warp->get(), offlineIR.getSize());
-	}
+	
 
 	auto smoothValText = parameters.smooth->getCurrentValueAsText();
 
+	if (smoothValText == "1/12 Octave")
+	{
+		IRTools::octaveSmooth(offlineIR, 1.f / 12.f, getSampleRate());
+	}
 	if (smoothValText == "1/5 Octave")
 	{
 		IRTools::octaveSmooth(offlineIR, 1.f / 5.f, getSampleRate());
@@ -315,9 +374,7 @@ void HpeqAudioProcessor::updateAndPreProcessIR()
 	{
 		IRTools::octaveSmooth(offlineIR, 1.f, getSampleRate());
 	}
-
-
-
+	
 	if (parameters.minPhase->get())
 	{
 		IRTools::makeMinPhase(offlineIR);

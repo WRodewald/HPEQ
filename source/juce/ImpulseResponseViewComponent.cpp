@@ -78,7 +78,7 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 	auto dBMin = dBRange.first;
 
 	auto fMin = 20;
-	auto fMax = ir.getSampleRate() * 0.5;
+	auto fMax = 22050;
 
 
 	auto f2X = [=](float f)
@@ -97,12 +97,56 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 	{
 		return 20 * std::log10(mag);
 	};
-	
-
 
 	g.setColour(Colours::darkgrey);
+
+	// vertical grid
+	for (int db = std::round(dBMin/12)*12; db <= dBMax; db+= 12)
+	{
+		g.setColour(Colours::darkgrey);
+		auto p1 = Point<float>(f2X(fMin), dB2Y(db));
+		auto p2 = Point<float>(f2X(fMax), dB2Y(db));
+		g.drawLine(Line<float>(p1,p2));
+		
+
+		g.setColour(Colours::grey);
+		g.drawText(std::to_string(db) + "dB", juce::Rectangle<float>(p1 + Point<float>(2, 2), p1 + Point<float>(50, 10)), Justification::left, false);
+	}
+
+	// horizontal grid
+	for (int base = 10; base <= fMax; base *= 10)
+	{
+		g.setColour(Colours::darkgrey);
+		for (int dec = 1; dec < 10; dec++)
+		{
+			float f = base * dec;
+			if((f >= fMin) && (f <= fMax)) g.drawLine(Line<float>(Point<float>(f2X(f), dB2Y(dBMin)), Point<float>(f2X(f), dB2Y(dBMax))));
+		}
+
+		if (base > fMin)
+		{
+			g.setColour(Colours::grey);
+			auto x = f2X(base);
+			std::string label = (base > 1000) ? std::to_string(static_cast<int>(base/1000.f)) + "kHz" : std::to_string(static_cast<int>(base)) + "Hz";
+			g.drawText(label, juce::Rectangle<float>(x+2, bounds.getY()+bounds.getHeight()+-14, 50,10), Justification::left, false);
+
+		}
+	}
+
+	// draw 0dB line
+	g.setColour(Colours::grey);
 	g.drawLine(Line<float>(Point<float>(f2X(fMin), dB2Y(0)), Point<float>(f2X(fMax), dB2Y(0))));
 
+	// draw 100Hz, 1kHz, 10kHz
+	g.setColour(Colours::grey);
+	g.drawLine(Line<float>(Point<float>(f2X(100),   dB2Y(dBMin)), Point<float>(f2X(100),   dB2Y(dBMax))));
+	g.drawLine(Line<float>(Point<float>(f2X(1000),  dB2Y(dBMin)), Point<float>(f2X(1000),  dB2Y(dBMax))));
+	g.drawLine(Line<float>(Point<float>(f2X(10000), dB2Y(dBMin)), Point<float>(f2X(10000), dB2Y(dBMax))));
+
+
+
+
+	// draw left and right graph 
 	for (auto ch : { 0,1 })
 	{
 		const auto & buffer = (ch == 0) ? ir.getLeftVector() : ir.getRightVector();
@@ -123,7 +167,7 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
 		{
 			auto f = ir.getSampleRate() * (static_cast<float>(i) / static_cast<float>(fftBuffer.size()));
-			auto dB = mag2db(abs(fftBuffer[i]));
+			auto dB = mag2db(abs(fftBuffer[i]) + 0.000001);
 
 			juce::Point<float> newPoint(f2X(f), dB2Y(dB));
 
@@ -161,6 +205,7 @@ void ImpulseResponseViewComponent::paintImpulseResponse(Graphics & g, juce::Rect
 	g.setColour(Colours::darkgrey);
 	g.drawLine(Line<float>(Point<float>(t2X(tMin), y2Y(0)), Point<float>(t2X(tMax), y2Y(0))));
 
+	
 	for (auto ch : { 0,1 })
 	{
 		const auto & buffer = (ch == 0) ? ir.getLeftVector() : ir.getRightVector();
@@ -213,6 +258,7 @@ std::pair<float, float> ImpulseResponseViewComponent::getFrequencyDomainDBScale(
 	auto minDB = +120.f;
 	auto maxDB = -120.f;
 
+
 	for (auto ch : { 0,1 })
 	{
 		const auto & buffer = (ch == 0) ? ir.getLeftVector() : ir.getRightVector();
@@ -227,22 +273,22 @@ std::pair<float, float> ImpulseResponseViewComponent::getFrequencyDomainDBScale(
 
 		for (unsigned int i = 0; i <= 0.5 * fftBuffer.size(); i++)
 		{
-			auto dB = 20.f * std::log10(abs(fftBuffer[i]));
+			auto dB = 20.f * std::log10(abs(fftBuffer[i]) + 0.000001f);
 
-			minDB = std::min(dB, minDB);
+ 			minDB = std::min(dB, minDB);
 			maxDB = std::max(dB, maxDB);
 		}
 	}
 	delete transform;
 
-	minDB = std::floor(minDB / 12) * 12;
-	maxDB = std::ceil(maxDB / 12) * 12;
+	minDB = std::floor(minDB / 24) * 24;
+	maxDB = std::ceil(maxDB / 24) * 24;
 
 	if (maxDB <= minDB)
 	{
 		maxDB += 12;
 		minDB -= 12;
 	}
-
+	
 	return { minDB, maxDB };
 }

@@ -10,7 +10,7 @@
 #pragma once
 
 #ifndef ConvMaxSize
-	#define ConvMaxSize 16384
+	#define ConvMaxSize 131072
 #endif
 
 #include <mutex>
@@ -142,23 +142,21 @@ private:
 	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// impulse response used in audio thread
 	std::unique_ptr<ImpulseResponse> cachedSwapIR{ nullptr };	// impulse response used for sawpping the live one
 
+	
 	struct 
 	{
-		juce::AudioParameterBool *monoIR;
-		juce::AudioParameterBool *normalize;
-		juce::AudioParameterBool *fadeOut;
-		juce::AudioParameterChoice *smooth;
-		juce::AudioParameterFloat *warp;
-
-
+		juce::AudioParameterBool	*monoIR;
+		juce::AudioParameterBool	*normalize;
+		juce::AudioParameterChoice	*lowFade;
+		juce::AudioParameterChoice	*highFade;
+		juce::AudioParameterChoice	*smooth;
+				
 		juce::AudioParameterBool *invert;
 		juce::AudioParameterBool *minPhase;
 
 		juce::AudioParameterChoice *engine;
 
 		juce::AudioParameterInt * partitions;
-
-
 	} parameters;
 
 	// normally would be a list and something more sophisticated but in this case, we only need that one notification

@@ -17,18 +17,19 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (600, 400);
+    setSize (750, 400);
+	constrainer.setMinimumWidth(750);
+	constrainer.setMinimumHeight(400);
 
-
-		
+	this->setConstrainer(&constrainer);
+	
 	// add sub components
-	addAndMakeVisible(fileSelectorComponent);	
-	addAndMakeVisible(paramEditorComponent);
+	addAndMakeVisible(fileSelectorComponent);
 	addAndMakeVisible(impulseResponseView);
 
 	bool makeResizable = true;
 	setResizable(true, makeResizable);
-	if (makeResizable) addAndMakeVisible(resizeComponent);
+	//if (makeResizable) addAndMakeVisible(resizeComponent);
 
 	fileSelectorComponent.setImpulseResponseFile(processor.getIRFile());
 
@@ -39,6 +40,19 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 
 	processor.setIRUpdateListener(this);
 
+	// parameters
+	setUpToggleButton(controls.invert,		getParameter<AudioParameterBool>("Invert"));
+	setUpToggleButton(controls.minPhase,	getParameter<AudioParameterBool>("MinPhase"));
+	setUpToggleButton(controls.normalize,	getParameter<AudioParameterBool>("Norm"));
+	setUpToggleButton(controls.monoIR,		getParameter<AudioParameterBool>("Mono"));
+
+	setUpComboBox(controls.lowFade,			getParameter<AudioParameterChoice>("LowFade"));
+	setUpComboBox(controls.highFade,		getParameter<AudioParameterChoice>("HighFade"));
+	setUpComboBox(controls.smooth,			getParameter<AudioParameterChoice>("Smooth"));
+	setUpComboBox(controls.engine,			getParameter<AudioParameterChoice>("Engine"));
+
+	setUpComboBox(controls.partitions,		getParameter<AudioParameterInt>("Partitions"));
+	
 }
 
 HpeqAudioProcessorEditor::~HpeqAudioProcessorEditor()
@@ -59,11 +73,42 @@ void HpeqAudioProcessorEditor::resized()
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
 
-	fileSelectorComponent.setBounds(300,0,getWidth()- 300, 30);
 
-	impulseResponseView.setBounds(300, 30, getWidth()- 300 - 2, getHeight()-30 - 2);
+	unsigned int paramViewWidth = 260;
+	unsigned int headerHeight   = 38;
 
-	paramEditorComponent.setBounds(0, 0, 300, getHeight());
+	unsigned int fileSelectorWidth = 550;
+
+	fileSelectorComponent.setBounds(this->getWidth() *0.5 - 0.5 * fileSelectorWidth, 4, fileSelectorWidth, 30);
+
+
+	impulseResponseView.setBounds(1, 1 + headerHeight, getWidth() - paramViewWidth - 2, getHeight() - headerHeight - 2);
+
+
+
+	std::vector<Component*> rightSideCtrls = 
+	{	&controls.invertButton, 
+		&controls.invert, 
+		&controls.minPhase,
+		&controls.normalize, 
+		&controls.monoIR,
+		nullptr,
+		&controls.lowFade,
+		&controls.highFade,
+		&controls.smooth,
+		&controls.engine,
+		&controls.partitions,
+	};
+
+	const int ctrlBoxOffsetH = 5;
+	const int ctrlOffsetV = 22;
+	for (int i = 0; i < rightSideCtrls.size(); i++)
+	{
+		auto component = rightSideCtrls[i];
+
+		if(component) component->setBounds(ctrlBoxOffsetH + getWidth() - paramViewWidth, headerHeight + i*ctrlOffsetV - 20, paramViewWidth- 2*ctrlBoxOffsetH, 20);
+	}
+
 
 	resizeComponent.setSize(getWidth(), getHeight());
 }
@@ -88,4 +133,115 @@ void HpeqAudioProcessorEditor::displayErrorMessage(ErrorMessageType type)
 		} break;
 	}
 	AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Erro", message);
+}
+
+
+void HpeqAudioProcessorEditor::setUpToggleButton(ToggleButton & btn, AudioParameterBool * param)
+{
+	
+
+	jassert(param != nullptr);
+	btn.setButtonText(param->name);
+
+	auto response = new ParamListenerT<AudioParameterBool>();
+
+	response->onUpdate = [=, &btn]()
+	{
+		bool value = param->get();
+		btn.setToggleState(value, NotificationType::dontSendNotification);
+	};
+
+
+	btn.onStateChange = [=, &btn]()
+	{
+		*param = btn.getToggleState();
+	};
+	
+	addAndMakeVisible(btn);
+	response->onUpdate();	
+}
+
+void HpeqAudioProcessorEditor::setUpComboBox(ComboBoxWLabel & box, AudioParameterChoice * param)
+{
+	jassert(param != nullptr);
+	box.label.setText(param->name, juce::NotificationType::dontSendNotification);
+
+	box.setBoxWidth(150);
+
+	auto response = new ParamListenerT<AudioParameterChoice>();
+
+	response->onUpdate = [=, &box]()
+	{
+		auto value = param->getCurrentChoiceName();
+		for (int i = 0; i < box.box.getNumItems(); i++)
+		{
+			if (box.box.getItemText(i) == value)
+			{
+				box.box.setSelectedItemIndex(i);
+				return;
+			}
+		}
+	};
+
+	param->addListener(response);
+	listeners.push_back(std::shared_ptr<ParamListener>(response));
+
+	int i = 0;
+	for (auto choice : param->choices)
+	{
+		box.box.addItem(choice, 1 + i++);
+	}
+
+	box.box.onChange = [param, &box]()
+	{
+		if(box.box.getSelectedItemIndex() >= 0) *param = box.box.getSelectedItemIndex();
+	};
+
+	addAndMakeVisible(box);
+	response->onUpdate();
+}
+
+void HpeqAudioProcessorEditor::setUpComboBox(ComboBoxWLabel & box, AudioParameterInt * param)
+{
+	jassert(param != nullptr);
+	box.label.setText(param->name, juce::NotificationType::dontSendNotification);
+
+	box.setBoxWidth(150);
+	
+	std::map<int, int> idToValueMap;
+	int id = 1;
+	for (int i = param->getRange().getStart(); i <= param->getRange().getEnd(); i++)
+	{
+		idToValueMap[id] = i;
+		box.box.addItem(std::to_string(i), id);
+		id++;
+	}
+
+	auto response = new ParamListenerT<AudioParameterChoice>();
+
+	response->onUpdate = [=, &box]()
+	{
+		auto value = param->get();
+		for (auto idValuePair : idToValueMap)
+		{
+			if (idValuePair.second == value)
+			{
+				box.box.setSelectedId(idValuePair.first);
+				return;
+			}
+		}
+	};
+
+	param->addListener(response);
+	listeners.emplace_back(response);
+
+	box.box.onChange = [idToValueMap, &box, param]()
+	{
+		auto id = box.box.getSelectedId();
+
+		if(id > 0) *param = idToValueMap.at(id);
+	};
+
+	addAndMakeVisible(box);
+	response->onUpdate();
 }

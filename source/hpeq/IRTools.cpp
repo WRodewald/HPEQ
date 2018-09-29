@@ -8,6 +8,59 @@
 
 
 
+ImpulseResponse IRTools::resample(const ImpulseResponse & ir, float targetSampleRate)
+{
+	if (targetSampleRate == ir.getSampleRate()) return ir;
+	auto  fs = ir.getSampleRate();
+	auto  tFs = targetSampleRate;
+	float ratio = tFs / fs;
+
+	unsigned int lengthSource = ir.getSize();
+	unsigned int lengthTarget = std::round(ratio* lengthSource);
+
+	auto normalizedSampleRate = std::min(ratio, 1.f);
+
+	std::vector<float> buffers[2];
+
+	static const unsigned int maxWidth = 32;
+	bool useWindowed = true; // lengthSource > maxWidth;
+
+	for (auto c : { 0,1 })
+	{
+		auto & buffer = buffers[c];
+		buffer.resize(lengthTarget);
+		std::fill(buffer.begin(), buffer.end(), 0);
+		const auto &source = ir.getVector(c);
+		
+		for (int i = 0; i < buffer.size(); i++)
+		{
+			// aligned position of source
+			float kFrac = static_cast<float>(i) / ratio;
+			
+			float kMinFrac = useWindowed ? kFrac - 0.5f*maxWidth:  0;
+			float kMaxFrac = useWindowed ? kFrac + 0.5f*maxWidth: lengthSource-1;
+
+			int kMin = std::max(static_cast<int>(std::floor(kMinFrac)), 0);
+			int kMax = std::min(static_cast<int>(std::ceil(kMaxFrac)), static_cast<int>(lengthSource - 1));
+						
+			for (int k = kMin; k <= kMax; k++)
+			{
+				float kRel = kFrac - k;
+				
+				// sinc weight
+				float w = (std::abs(kRel) <= 0.000001) ? 1.f :  std::sin(M_PI * kRel * normalizedSampleRate) / (M_PI*kRel * normalizedSampleRate);
+
+				// hann window
+				if(useWindowed) w *= 0.5 * (1. - std::cos(2. * M_PI * (k-kMin) / (kMax-kMin+0.0001)));
+				
+				buffer[i] += w * source[k];
+			}
+		}
+	}
+
+	return ImpulseResponse(buffers[0], buffers[1], targetSampleRate);
+}
+
 void IRTools::makeMono(ImpulseResponse & ir)
 {
 	auto left  = ir.getLeft();
@@ -17,6 +70,60 @@ void IRTools::makeMono(ImpulseResponse & ir)
 	{
 		left[i] = right[i] = 0.5 * (left[i] + right[i]);
 	}
+}
+
+ImpulseResponse  IRTools::truncate(const ImpulseResponse & ir, float dbThreshold, bool keepPow2)
+{	
+
+	float magThreshold = std::pow(10, dbThreshold / 20.f);
+
+	float fullEnergy[2] = { 0,0 };
+	for (int i = 0; i < ir.getSize(); i++)
+	{
+		float l = ir.getLeft()[i];
+		float r = ir.getRight()[i];
+
+		fullEnergy[0] += (l*l);
+		fullEnergy[1] += (r*r);
+	}
+	
+	float sqrSum[2] = { 0,0 };
+	unsigned int lastBin;
+	for (int i = ir.getSize()-1; i >= 0; i--)
+	{
+		lastBin = i;
+
+		float l = ir.getLeft()[i];
+		float r = ir.getRight()[i];
+
+		sqrSum[0] += (l*l);
+		sqrSum[1] += (r*r);
+
+		auto len = ir.getSize() - i;
+		float relRms = std::sqrt(std::max(sqrSum[0] / fullEnergy[0], sqrSum[1] / fullEnergy[1]));
+
+		if(relRms >= magThreshold)
+		{
+			break;
+		}
+	}
+	
+	auto newLen = lastBin + 1;
+	
+	if (keepPow2)
+	{
+		newLen = nextPow2(newLen);	
+	}
+	
+	if (newLen == ir.getSize()) return ir;
+
+	auto left  = ir.getLeftVector();
+	auto right = ir.getRightVector();
+
+	left.resize(newLen);
+	right.resize(newLen);
+
+	return ImpulseResponse(left, right, ir.getSampleRate());
 }
 
 void IRTools::octaveSmooth(ImpulseResponse & ir, float width, float fs)
@@ -96,12 +203,14 @@ void IRTools::octaveSmooth(ImpulseResponse & ir, float width, float fs)
 	delete transform;
 }
 
-void IRTools::normalize(ImpulseResponse & ir, float fs)
+void IRTools::normalize(ImpulseResponse & ir)
 {
 	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
 
 	unsigned int size = ir.getSize();
+
+	auto fs = ir.getSampleRate();
 
 	auto transform = AFourierTransformFactory::FourierTransform(std::log2(size));
 
@@ -126,7 +235,7 @@ void IRTools::normalize(ImpulseResponse & ir, float fs)
 		for (int i = 0; i < buffer.size(); i++)
 		{
 			float f = fs * static_cast<float>(i) / static_cast<float>(buffer.size());
-			float w = frequencyWeight(f, fs, 50, 20000, 2);
+			float w = frequencyWeight(f, fs, 50, 20000, 2, 2);
 
 			auto & bin = buffer[i];
 
@@ -174,10 +283,12 @@ void IRTools::normalize(ImpulseResponse & ir, float fs)
 }
 
 
-void IRTools::fadeOut(ImpulseResponse & ir, float fs)
+void IRTools::fadeOut(ImpulseResponse & ir, float fHP, float fLP, unsigned int hpfOrder, unsigned int lpfOrder)
 {
 	assert(isPow2(ir.getSize()));
 	if (ir.getSize() < 2) return;
+	
+	auto fs = ir.getSampleRate();
 
 	unsigned int size = ir.getSize();
 
@@ -203,7 +314,7 @@ void IRTools::fadeOut(ImpulseResponse & ir, float fs)
 		for (int i = 0; i < buffer.size(); i++)
 		{
 			float f = fs * static_cast<float>(i) / static_cast<float>(buffer.size());
-			float w = frequencyWeight(f, fs, 50, 20000, 2);
+			float w = frequencyWeight(f, fs, fHP, fLP, hpfOrder, lpfOrder);
 
 			auto & bin = buffer[i];
 
@@ -218,7 +329,7 @@ void IRTools::fadeOut(ImpulseResponse & ir, float fs)
 		for (int i = 0; i < buffer.size(); i++)
 		{
 			float f = fs * static_cast<float>(i) / static_cast<float>(buffer.size());
-			float w = frequencyWeight(f, fs, 50, 20000, 2);
+			float w = frequencyWeight(f, fs, fHP, fLP, hpfOrder, lpfOrder);
 
 			auto & bin = buffer[i];
 
@@ -384,6 +495,9 @@ void IRTools::zeroPadToPow2(ImpulseResponse & ir)
 		auto newSize = nextPow2(ir.getSize());
 		
 		std::vector<float> left, right;
+
+		left.resize(newSize);
+		right.resize(newSize);
 		
 		std::fill(left.begin(),  left.end(), 0);
 		std::fill(right.begin(), right.end(), 0);
@@ -408,7 +522,7 @@ bool IRTools::isPow2(unsigned int x)
 	return x == nextPow2(x);
 }
 
-float IRTools::frequencyWeight(float f, float fs, float fHP, float fLP, unsigned int order)
+float IRTools::frequencyWeight(float f, float fs, float fHP, float fLP, unsigned int hpfOrder, unsigned int lpfOrder)
 {
 	std::complex<double> z = std::polar(1., 2.f * M_PI * f / fs);
 
@@ -422,5 +536,5 @@ float IRTools::frequencyWeight(float f, float fs, float fHP, float fLP, unsigned
 	auto hHP = 1. - bHP / (1. + (bHP - 1) * zI);
 	
 	// combined response
-	return std::pow(std::abs(hHP * hLP), order);
+	return std::pow(std::abs(hHP), hpfOrder) * std::pow(std::abs(hLP), lpfOrder);
 }

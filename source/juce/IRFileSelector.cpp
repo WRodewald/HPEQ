@@ -17,8 +17,11 @@ using namespace juce;
 IRFileSelector::IRFileSelector()
 {
 	layoutedComponents.push_back(&prevButton);
+	layoutedComponents.push_back(nullptr);
 	layoutedComponents.push_back(&fileList);
+	layoutedComponents.push_back(nullptr);
 	layoutedComponents.push_back(&nextButton);
+	layoutedComponents.push_back(nullptr);
 	layoutedComponents.push_back(&rootButton);
 	
 	addAndMakeVisible(prevButton);
@@ -62,10 +65,15 @@ void IRFileSelector::resized()
 
 	auto height = getHeight();
 
+	auto spacerSize = 4;
+
 	layout.setItemLayout(0, height, height, height);
-	layout.setItemLayout(1, 100, 200, -0.6);
-	layout.setItemLayout(2, height, height, height);
-	layout.setItemLayout(3, 60, 100, -0.3);
+	layout.setItemLayout(1, spacerSize, spacerSize, spacerSize);
+	layout.setItemLayout(2, 100, 300, -0.6);
+	layout.setItemLayout(3, spacerSize, spacerSize, spacerSize);
+	layout.setItemLayout(4, height, height, height);
+	layout.setItemLayout(5, spacerSize, spacerSize, spacerSize);
+	layout.setItemLayout(6, 60, 60, -0.3);
 	 
 
 	layout.layOutComponents(layoutedComponents.data(), layoutedComponents.size(), 0, 0, getWidth(), getHeight(), false, true);
