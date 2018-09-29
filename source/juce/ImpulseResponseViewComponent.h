@@ -15,7 +15,8 @@
 
 
 //==============================================================================
-/*
+/**
+	A JUCE Component that displays frequency and time domain representations of a ImpulseResponse
 */
 class ImpulseResponseViewComponent    : public Component
 {
@@ -23,6 +24,10 @@ public:
     ImpulseResponseViewComponent();
     ~ImpulseResponseViewComponent();
 
+	/**
+		Sets the impulse response @p ir to render and forces a repaint
+		@param ir the ir to be displayed
+	*/
 	void setImpulseResponse(ImpulseResponse ir);
 
     void paint (Graphics&) override;

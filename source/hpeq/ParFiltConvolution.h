@@ -2,7 +2,11 @@
 
 
 #include "AConvolutionEngine.h"
-
+/**
+	A convolution engine that implements the parallel filterbank IIR approximation method discussed in Bank 2007. 
+	(Direct design of parallel second-order filters for instrument bodymodeling) 
+	Work In Progress!
+*/
 class ParFiltConvolution : public AConvolutionEngine
 {
 public:

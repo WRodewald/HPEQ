@@ -11,6 +11,8 @@ constexpr bool isPowerOfTwo(int x)
 
 /**
 	A queue buffer of variable type with a static max size.
+	@param T the queued sample type
+	@param MaxSize the static buffer size of the queue
 */
 template<typename T, unsigned int MaxSize>
 class StaticQueue
@@ -35,23 +37,25 @@ public:
 	
 	/**
 		Writes a sample to the queue head
+		@param input the sample to be pushed
 	*/
 	void push(const T & input);
 
 	/**
 		Writes N samples to the queue head
-		@param input the sample to be written
+		@param input the sample to be written N times
 		@param N	 number of samples to be written
 	*/
 	void push(const T & input, unsigned int N);
 
 	/**
 		Reads a sample from the queue tail
+		@return T the pulled  sample
 	*/
 	T pull();
 
 	/**
-		Clears the queue and sets the delay back to 0
+		Clears the queue and sets the delay back to T(0)
 	*/
 	void clear();
 

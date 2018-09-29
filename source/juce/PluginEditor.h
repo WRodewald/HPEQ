@@ -17,7 +17,7 @@
 #include "ImpulseResponseViewComponent.h"
 
 //==============================================================================
-/**
+/*
 */
 
 class ComboBoxWLabel : public juce::Component
@@ -54,11 +54,13 @@ private:
 	unsigned int boxWidth{ 100 };
 };
 
+//@cond  
 class ParamListener 
 {
 public:
 	virtual ~ParamListener() = default;
 };
+//@endcon
 
 /**
 	Implements a parameter listener that forwards to a generic std::function on change
@@ -125,7 +127,7 @@ private:
     // access the processor object that created it.
     HpeqAudioProcessor& processor;
 
-	IRFileSelector fileSelectorComponent;
+	IRFileSelectorComponent fileSelectorComponent;
 	
 	ImpulseResponseViewComponent impulseResponseView;
 	

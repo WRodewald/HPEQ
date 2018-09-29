@@ -25,16 +25,25 @@
 
 #include "../hpeq/ParFiltConvolution.h"
 
+/**
+	Implements #AFourierTransformFactory FFT engine factory. It uses the FFT engine provided by JUCE for the implementation.
+*/
 class JuceFourierTransformFactory : public AFourierTransformFactory
 {
-	// Inherited via AFourierTransformFactory
+protected:
 	virtual AFourierTransform * createFourierTransform(unsigned int order) const override;
 };
 
-
+/**
+	A listener interface for classes that want to be notified when a impulse response was changed.
+*/
 class ImpulseResponseUpdateListener
 {
 public:
+	/**
+		Is called when a impulse response was changed
+		@param ir the new impulse response
+	*/
 	virtual void setUpdateIR(const ImpulseResponse & ir) = 0;
 };
 

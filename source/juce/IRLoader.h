@@ -4,17 +4,20 @@
 #include "../hpeq/ImpulseResponse.h"
 
 /**
-	Class handles audio I/O, and stores one impulse response as part of the plugin's current state. 
+	Class handles reading from impulse response files and resamples and zero pads them to a size of N=2^n 
 */
 class IRLoader
 {
 public:
 
+	/**
+		Error Codes that may be returned on loading or resampling
+	*/
 	enum class ErrorCode
 	{
-		NoError = 0,
-		ToLong = 1,
-		Other  = 2
+		NoError = 0, // no error
+		ToLong = 1,	 // impulse response was too long during loading or resampling
+		Other  = 2	 // other errors
 	};
 
 

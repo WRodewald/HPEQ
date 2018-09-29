@@ -18,22 +18,29 @@
 
 //==============================================================================
 
-
-class IRFileSelector    : public Component
+/**
+	A component that provides UI components to navigate between multiple .wav impulse responses in a selectable folder
+*/
+class IRFileSelectorComponent    : public Component
 {
 
 public:
-    IRFileSelector();
-    ~IRFileSelector();
+    IRFileSelectorComponent();
+    ~IRFileSelectorComponent();
 
     void paint (Graphics&) override;
     void resized() override;
 
-	// callback function called when the selected file changes
+	/**
+		A callback function that can be assigned. Is called once the selected impulse response file was updated
+	*/
 	std::function<void(juce::File)> onFileChange; 
 
 
-	// internal set
+	/**
+		sets the impulse response file and if necessary updates the contianing directory
+		@param path the path to a .wav file
+	*/
 	void setImpulseResponseFile(juce::File path);
 	
 private:
@@ -76,5 +83,5 @@ private:
 
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IRFileSelector)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IRFileSelectorComponent)
 };

@@ -13,7 +13,11 @@ public:
 
 	/**
 		Performs the convolution block-wise. 
-
+		@param readL pointer to the first sample of the left input buffers
+		@param readR pointer to the first sample of the right input buffers
+		@param writeL pointer to the first sample of the left output buffers
+		@param writeR pointer to the first sample of the right output buffers
+		@param numSamples the number of samples in the input  output buffers
 	*/
 	virtual void process(const float *readL, const float *readR,  float *writeL, float *writeR, unsigned int numSamples) = 0;
 	
@@ -31,7 +35,7 @@ public:
 protected:
 	
 	/**
-		Returns a pointer to the current impulse response. Never returns nullptr.
+		Returns a pointer to the current impulse response. Is guaranteed to never return NULL.
 	*/
 	inline const ImpulseResponse * getIR();
 

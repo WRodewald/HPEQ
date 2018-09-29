@@ -63,28 +63,32 @@ public:
 	void setSize(unsigned int size);
 
 	/**
-		Functions fills the internal std::array with a given value
+		Functions fills the internal std::array with a given value @p val
 	*/
 	void fill(const T & val = T(0));
 
 	/**
 		Function writes, reads and increments.
+		@param input the sample to be written
+		@return the sample read from the end
 	*/
 	T tick(const T & input);
 
 
 	/**
-		Function increments the write Pos without altering the buffers content.
+		Function increments the write and read position.
 	*/
 	void increment();
 
 	/**
-		Function returns a reference to an element, with readPos == writePos at idx = 0. 
+		Function returns a reference to an element, with delay = writePos - @p readPos. So with @readPos = 0, the last written sample will be returned.
+		@param readPos the read position relative to write with delay = writePos - @p readPos
 	*/
 	T & operator[](unsigned int readPos);
 
 	/**
-		Function performs linear interpolation, with readPos == writePos at idx = 0. 
+		Function reads with linear interpolation
+		@param readPos the read position relative to write with delay = writePos - @p readPos
 	*/
 	T readF(float readPos);
 

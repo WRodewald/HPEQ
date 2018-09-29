@@ -11,7 +11,12 @@
 
 
 /**
-	FFTPartConvolution implements a simple partitioned FFT where the full impulse response is split in M partitions. 
+	FFTPartConvolution implements a simple partitioned FFT where the full impulse response is split in P partitions. 
+	The number of partitions is set by #setPartitioningOrder where the order n sets the number of partitions P = 2^N;
+
+	The engine implements the frequency delay line approach discussed in Eric Battenberg, Rimas Avizienis 2011 to prevent unnecessary FFT calls.
+	
+
 	@param MaxSize maximum supported impulse response time, needs to be power of 2
 */
 template<unsigned int MaxSize>

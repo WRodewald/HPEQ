@@ -12,15 +12,16 @@
 
 /**
 	FFConvolution implements a latency heavy, brute force convolution engine using FFTs. 
-	@param MaxSize maximum supported impulse response time, needs to be power of 2
-	
-	For a impuls response of size N = 2^n we
-	- store input samples until we have N samples ready to go
-	- zero pad to 2*N, perform FFT, per sample multiplication, IFFT of 2*N
-	- we store the first half (N samples) in primary queue, adding old (N..2*N) samples from the secondary queue
-	- we store the second half (N samples) in secondary queue for next FFT
+		
+	For a impuls response of size N = 2^n:
+	- buffers up to N input samples, simultaniously outputs samples from the output queue
+	- zero pads the input to 2*N, perform FFT, per sample complex multiplication, IFFT
+	- store the first half (0..N-1) in primary queue, adding old samples from the secondary queue
+	- we store the second half (N..2*N-1) in secondary queue for next FFT
 
-	That means: all the latency, very badly balanced CPU load. 
+	That means: The latency is determined by the impulse response length.
+
+	@param MaxSize maximum supported impulse response time, needs to be power of 2
 */
 template<unsigned int MaxSize>
 class FFTConvolution : public AConvolutionEngine

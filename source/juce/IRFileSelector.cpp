@@ -14,7 +14,7 @@
 using namespace juce;
 
 //==============================================================================
-IRFileSelector::IRFileSelector()
+IRFileSelectorComponent::IRFileSelectorComponent()
 {
 	layoutedComponents.push_back(&prevButton);
 	layoutedComponents.push_back(nullptr);
@@ -50,15 +50,15 @@ IRFileSelector::IRFileSelector()
 
 }
 
-IRFileSelector::~IRFileSelector()
+IRFileSelectorComponent::~IRFileSelectorComponent()
 {
 }
 
-void IRFileSelector::paint (Graphics& g)
+void IRFileSelectorComponent::paint (Graphics& g)
 {
 }
 
-void IRFileSelector::resized()
+void IRFileSelectorComponent::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..
@@ -79,7 +79,7 @@ void IRFileSelector::resized()
 	layout.layOutComponents(layoutedComponents.data(), layoutedComponents.size(), 0, 0, getWidth(), getHeight(), false, true);
 }
 
-void IRFileSelector::showDirSelectionDialog()
+void IRFileSelectorComponent::showDirSelectionDialog()
 {
 	auto initialPath = data.irRootPath.isDirectory() ? data.irRootPath : File::getCurrentWorkingDirectory();
 	FileChooser fileChooser{ "Impulse Response Directory", initialPath };
@@ -92,7 +92,7 @@ void IRFileSelector::showDirSelectionDialog()
 	}
 }
 
-void IRFileSelector::updateContentsInFileBox()
+void IRFileSelectorComponent::updateContentsInFileBox()
 {
 	this->fileList.clear();
 
@@ -111,7 +111,7 @@ void IRFileSelector::updateContentsInFileBox()
 	}
 }
 
-void IRFileSelector::setCurrentlySelectedItem(int idx)
+void IRFileSelectorComponent::setCurrentlySelectedItem(int idx)
 {
 	currentFileIdx = idx;
 	if (idx < 0)
@@ -127,7 +127,7 @@ void IRFileSelector::setCurrentlySelectedItem(int idx)
 	}
 }
 
-void IRFileSelector::callCallback()
+void IRFileSelectorComponent::callCallback()
 {
 	if (onFileChange)
 	{
@@ -146,7 +146,7 @@ void IRFileSelector::callCallback()
 }
 
 
-void IRFileSelector::setImpulseResponseFile(juce::File path)
+void IRFileSelectorComponent::setImpulseResponseFile(juce::File path)
 {
 	if (path.isDirectory())
 	{
@@ -177,7 +177,7 @@ void IRFileSelector::setImpulseResponseFile(juce::File path)
 	}
 }
 
-void IRFileSelector::setIRRootPath(juce::File path)
+void IRFileSelectorComponent::setIRRootPath(juce::File path)
 {
 	if (data.irRootPath == path) return;
 	data.irRootPath = path;

@@ -8,7 +8,7 @@
 
 
 
-ImpulseResponse IRTools::resample(const ImpulseResponse & ir, float targetSampleRate)
+ImpulseResponse IRTools::resample(const ImpulseResponse & ir, float targetSampleRate, unsigned int windowWidth)
 {
 	if (targetSampleRate == ir.getSampleRate()) return ir;
 	auto  fs = ir.getSampleRate();
@@ -22,8 +22,8 @@ ImpulseResponse IRTools::resample(const ImpulseResponse & ir, float targetSample
 
 	std::vector<float> buffers[2];
 
-	static const unsigned int maxWidth = 32;
-	bool useWindowed = true; // lengthSource > maxWidth;
+	windowWidth = std::max(2U, windowWidth + (windowWidth % 1));
+	bool useWindowed = lengthSource > windowWidth;
 
 	for (auto c : { 0,1 })
 	{
@@ -37,8 +37,8 @@ ImpulseResponse IRTools::resample(const ImpulseResponse & ir, float targetSample
 			// aligned position of source
 			float kFrac = static_cast<float>(i) / ratio;
 			
-			float kMinFrac = useWindowed ? kFrac - 0.5f*maxWidth:  0;
-			float kMaxFrac = useWindowed ? kFrac + 0.5f*maxWidth: lengthSource-1;
+			float kMinFrac = useWindowed ? kFrac - 0.5f*windowWidth :  0;
+			float kMaxFrac = useWindowed ? kFrac + 0.5f*windowWidth : lengthSource-1;
 
 			int kMin = std::max(static_cast<int>(std::floor(kMinFrac)), 0);
 			int kMax = std::min(static_cast<int>(std::ceil(kMaxFrac)), static_cast<int>(lengthSource - 1));
@@ -262,13 +262,15 @@ void IRTools::normalize(ImpulseResponse & ir)
 		// FFT
 		transform->performFFTInPlace(buffer.data());
 
-		// calculate wheighted average
+		// apply average
 		float xSum = 0;
 		float wSum = 0;
 		for (int i = 0; i < buffer.size(); i++)
 		{
 			buffer[i] /= avg;
 		}
+		// remove DC
+		buffer[0] = 0;
 		
 		transform->performIFFTInPlace(buffer.data());
 
