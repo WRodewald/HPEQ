@@ -13,14 +13,16 @@ var hierarchy =
       [ "JuceFourierTransformFactory", "class_juce_fourier_transform_factory.html", null ]
     ] ],
     [ "IRTools::AllpassFirstOrer< T >", "class_i_r_tools_1_1_allpass_first_orer.html", null ],
+    [ "ParFiltConvolution::SOS< T >::Coeffs", "struct_par_filt_convolution_1_1_s_o_s_1_1_coeffs.html", null ],
     [ "Component", null, [
       [ "ImpulseResponseViewComponent", "class_impulse_response_view_component.html", null ],
       [ "IRFileSelectorComponent", "class_i_r_file_selector_component.html", null ]
     ] ],
+    [ "ParFiltConvolution::FilterBank", "struct_par_filt_convolution_1_1_filter_bank.html", null ],
     [ "ImpulseResponse", "class_impulse_response.html", null ],
     [ "ImpulseResponseUpdateListener", "class_impulse_response_update_listener.html", null ],
     [ "IRLoader", "class_i_r_loader.html", null ],
-    [ "ParFiltConvolution::SOS", "class_par_filt_convolution_1_1_s_o_s.html", null ],
+    [ "ParFiltConvolution::SOS< T >", "class_par_filt_convolution_1_1_s_o_s.html", null ],
     [ "StaticQueue< T, MaxSize >", "class_static_queue.html", null ],
     [ "StaticQueue< float, MaxSize >", "class_static_queue.html", null ],
     [ "StaticRingBuffer< T, MaxSize >", "class_static_ring_buffer.html", null ],

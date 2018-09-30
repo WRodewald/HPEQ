@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "AConvolutionEngine.h"
+
 /**
 	A convolution engine that implements the parallel filterbank IIR approximation method discussed in Bank 2007. 
 	(Direct design of parallel second-order filters for instrument bodymodeling) 
@@ -61,11 +62,14 @@ public:
 
 	};
 
+	/**
+		A small unility class that contains filters to be used during processing.	
+	*/
 	struct FilterBank
 	{
 		std::vector<SOS<float>> parallelFilters;
 
-		float b0;
+		float b0{ 1 }; // parallel feed forward coefficient;
 	};
 
 
@@ -83,12 +87,6 @@ public:
 	*/
 	void createNewFilterBank(unsigned int order, float lambda);
 
-protected:
-	virtual void onImpulseResponseUpdated() override;
-
-private:
-
-	
 	/**
 		Implements the prony algorithm for FIR to IIR approximation, for fixed order = orderFB = orderFF
 		@param h the FIR coefficients
@@ -105,26 +103,41 @@ private:
 	static std::vector<std::complex<double>> roots(std::vector<double> polynom);
 
 	/**
-		Does stuff.
+		Performs a least mean square approximation to find the feed forward coefficeints of a IIR filter with a given bigger FIR response
+		and a set of poles (feed back coefficients). Work in Progress
+		@param ir the target FIR filter
+		@param poles a set of (complex) poles used as a strarting point
+		@param firOrder the order of the parallel fir element
+		@return returns the ready to go filter bank 
 	*/
 	static FilterBank approximateIR(std::vector<double> ir, std::vector<std::complex<double>> poles, unsigned int firOrder);
 
 	/**
 		Returns the coefficients for a complex polynomial. Assumes that the complex roots are conjugates and thus only returns the real part
+		@param roots the roots of a polynomial
+		@return the associated coefficients were coefficients.back() is the constant element (x^0)
 	*/
 	static std::vector<double> poly(std::vector<std::complex<double>> roots);
 
 	/**
-		Sorts complex poles. 
+		Sorts  and cleans a set of complex poles. 
 		- removes poles that are very close to zero
 		- moves poles close to the real axis on the real axis
 		- returns a list of complex conjugate poles followed by real poles. (If odd, the last pole is real)
 	*/
 	static std::vector<std::complex<double>> sortPoles(std::vector<std::complex<double>> input);
 
+protected:
+	virtual void onImpulseResponseUpdated() override;
+	
+
 private:
 
-	void checkUpdatedFilterbank();
+	/**
+		Functions checks if a updated filter bank can be loaded. If so, the online filter bank is swapped with the new offline bank.
+		Function might lock but does not dynamically allocate or destroy.
+	*/
+	void updateFilterBank();
 
 private:
 

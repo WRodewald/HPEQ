@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['fftconvolution',['FFTConvolution',['../class_f_f_t_convolution.html',1,'']]],
-  ['fftpartconvolution',['FFTPartConvolution',['../class_f_f_t_part_convolution.html',1,'']]]
+  ['coeffs',['Coeffs',['../struct_par_filt_convolution_1_1_s_o_s_1_1_coeffs.html',1,'ParFiltConvolution::SOS']]]
 ];

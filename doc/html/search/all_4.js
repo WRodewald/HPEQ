@@ -1,6 +1,7 @@
 var searchData=
 [
   ['getchannel',['getChannel',['../class_impulse_response.html#aace9f1c976b54e98eed26f70e63ef424',1,'ImpulseResponse::getChannel(unsigned int idx) const'],['../class_impulse_response.html#ab303bc8f9a9f1f45770e61fef1c3648b',1,'ImpulseResponse::getChannel(unsigned int idx)']]],
+  ['getcoeffs',['getCoeffs',['../class_par_filt_convolution_1_1_s_o_s.html#a7f711811ff114eb1e0ca5caba4e8119d',1,'ParFiltConvolution::SOS']]],
   ['getimpulseresponse',['getImpulseResponse',['../class_i_r_loader.html#a02701d7b4581db8238fe8746b8071d53',1,'IRLoader']]],
   ['getir',['getIR',['../class_a_convolution_engine.html#a86b129abd84a757e4b38d4bbd6bf756d',1,'AConvolutionEngine']]],
   ['getleft',['getLeft',['../class_impulse_response.html#a205fb3a59cb9b5bc41e9ce85443507e7',1,'ImpulseResponse::getLeft() const'],['../class_impulse_response.html#ac93377a5c317df88daa3b553d722f088',1,'ImpulseResponse::getLeft()']]],
