@@ -38,8 +38,13 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 	addParameter(parameters.highFade	= new AudioParameterChoice("HighFade",	"High Fade", { "Off", "5kHz", "10kHz", "20kHz" }, 0));
 	addParameter(parameters.monoIR		= new AudioParameterBool("Mono",		"Mono IR", 0));
 	addParameter(parameters.smooth		= new AudioParameterChoice("Smooth",	"Smooth", { "Off", "1/12 Octave", "1/5 Octave", "1/3 Octave", "1 Octave" }, 0));
-	addParameter(parameters.engine		= new AudioParameterChoice("Engine",	"Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
 	addParameter(parameters.partitions	= new AudioParameterInt("Partitions",	"Partitions",0,7,0));
+
+#ifdef ENABLE_PARFILT_WIP
+		addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT", "ParFilt" }, 0));
+#else
+		addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
+#endif
 
 
 	parameters.minPhase->addListener(this);
@@ -207,9 +212,15 @@ void HpeqAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 	else if (currentEngine == "Part FFT")
 	{
-		// ToDo: replace with partitioned FFT convolution
 		this->fftPartConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
 	}
+#ifdef ENABLE_PARFILT_WIP
+	else if (currentEngine == "ParFilt")
+	{
+		this->parFiltConvolution.process(lRead, rRead, lWrite, rWrite, buffer.getNumSamples());
+	}
+#endif
+
 }
 
 //==============================================================================
@@ -400,7 +411,7 @@ void HpeqAudioProcessor::updateAudioThreadIR()
 		fftPartConvolution.setImpulseResponse(cachedLiveIR.get());
 
 #ifdef ENABLE_PARFILT_WIP
-		//parFiltConvolution.setImpulseResponse(cachedLiveIR.get());
+		parFiltConvolution.setImpulseResponse(cachedLiveIR.get());
 #endif
 
 		fftPartConvolution.setPartitioningOrder(parameters.partitions->get());
