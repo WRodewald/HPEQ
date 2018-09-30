@@ -13,8 +13,12 @@
 	#define ConvMaxSize 131072
 #endif
 
-#include <mutex>
 
+// use this to enable the work in progress parfilt implementation
+//#define ENABLE_PARFILT_WIP
+
+
+#include <mutex>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "IRLoader.h"
 #include "../hpeq/TimeDomainConvolution.h"
@@ -23,7 +27,11 @@
 #include "../hpeq/AFourierTransformFactory.h"
 #include "JuceFourierTransform.h"
 
+#ifdef ENABLE_PARFILT_WIP
 #include "../hpeq/ParFiltConvolution.h"
+#endif
+
+
 
 /**
 	Implements #AFourierTransformFactory FFT engine factory. It uses the FFT engine provided by JUCE for the implementation.
@@ -136,8 +144,9 @@ private:
 	TimeDomainConvolution<ConvMaxSize>  tdConvolution;
 	FFTConvolution<ConvMaxSize>			fftConvolution;
 	FFTPartConvolution<ConvMaxSize>		fftPartConvolution;
-	//ParFiltConvolution					parFiltConvolution;
-
+#ifdef ENABLE_PARFILT_WIP
+	ParFiltConvolution					parFiltConvolution;
+#endif
 
 	/*
 		the offline IR is the impulse response currently loaded but fe
@@ -151,6 +160,7 @@ private:
 	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// impulse response used in audio thread
 	std::unique_ptr<ImpulseResponse> cachedSwapIR{ nullptr };	// impulse response used for sawpping the live one
 
+	
 	
 	struct 
 	{

@@ -20,6 +20,10 @@
 /*
 */
 
+// the parameter handlin in the view seems to be broken currenlty
+// works on Windows but not sufficiently tested on MacOS, thus, removed for now
+//#define WORK_IN_PROGRESS_UI 
+
 class ComboBoxWLabel : public juce::Component
 {
 public:
@@ -133,30 +137,35 @@ private:
 	
 	juce::ResizableBorderComponent resizeComponent{ this, nullptr };
 	
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HpeqAudioProcessorEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HpeqAudioProcessorEditor)
 
 
-	struct
+#ifdef WORK_IN_PROGRESS_UI
+
+
+
+		struct
 	{
 		ToggleButton invertButton;
 		ToggleButton invert;
-		ToggleButton minPhase;	
+		ToggleButton minPhase;
 		ToggleButton normalize;
-		ToggleButton monoIR;	
+		ToggleButton monoIR;
 
-		ComboBoxWLabel lowFade;		
+		ComboBoxWLabel lowFade;
 		ComboBoxWLabel highFade;
 		ComboBoxWLabel smooth;
 		ComboBoxWLabel engine;
 		ComboBoxWLabel partitions;
-		
-	} controls; 
+
+	} controls;
+
+#endif
 
 
 	std::vector<std::shared_ptr<ParamListener>> listeners;
-
-
 	juce::ComponentBoundsConstrainer constrainer;
+
 };
 
 

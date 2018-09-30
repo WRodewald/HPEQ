@@ -40,6 +40,8 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 
 	processor.setIRUpdateListener(this);
 
+#ifdef WORK_IN_PROGRESS_UI
+
 	// parameters
 	setUpToggleButton(controls.invert,		getParameter<AudioParameterBool>("Invert"));
 	setUpToggleButton(controls.minPhase,	getParameter<AudioParameterBool>("MinPhase"));
@@ -52,7 +54,8 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 	setUpComboBox(controls.engine,			getParameter<AudioParameterChoice>("Engine"));
 
 	setUpComboBox(controls.partitions,		getParameter<AudioParameterInt>("Partitions"));
-	
+
+#endif
 }
 
 HpeqAudioProcessorEditor::~HpeqAudioProcessorEditor()
@@ -73,9 +76,13 @@ void HpeqAudioProcessorEditor::resized()
 	// This is generally where you'll want to lay out the positions of any
 	// subcomponents in your editor..
 
+	unsigned int headerHeight = 38;
 
+#ifdef WORK_IN_PROGRESS_UI
 	unsigned int paramViewWidth = 260;
-	unsigned int headerHeight   = 38;
+#else
+	unsigned int paramViewWidth = 0;
+#endif
 
 	unsigned int fileSelectorWidth = 550;
 
@@ -85,7 +92,7 @@ void HpeqAudioProcessorEditor::resized()
 	impulseResponseView.setBounds(1, 1 + headerHeight, getWidth() - paramViewWidth - 2, getHeight() - headerHeight - 2);
 
 
-
+#ifdef WORK_IN_PROGRESS_UI
 	std::vector<Component*> rightSideCtrls = 
 	{	&controls.invertButton, 
 		&controls.invert, 
@@ -101,6 +108,7 @@ void HpeqAudioProcessorEditor::resized()
 	};
 
 	const int ctrlBoxOffsetH = 5;
+
 	const int ctrlOffsetV = 22;
 	for (int i = 0; i < rightSideCtrls.size(); i++)
 	{
@@ -109,6 +117,7 @@ void HpeqAudioProcessorEditor::resized()
 		if(component) component->setBounds(ctrlBoxOffsetH + getWidth() - paramViewWidth, headerHeight + i*ctrlOffsetV - 20, paramViewWidth- 2*ctrlBoxOffsetH, 20);
 	}
 
+#endif
 
 	resizeComponent.setSize(getWidth(), getHeight());
 }

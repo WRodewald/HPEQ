@@ -40,6 +40,9 @@ public:
 
 
 public:
+
+	ParFiltConvolution();
+
 	// Inherited via AConvolutionEngine
 	virtual void process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples) override;
 
@@ -58,11 +61,24 @@ private:
 	/**
 		Finds poles of the prony approximated IIR transfer function
 	*/
-	static std::vector<std::complex<float>> findPoles(const ImpulseResponse& ir, unsigned int order);
+	static std::vector<std::complex<double>> findPoles(const ImpulseResponse& ir, unsigned int order);
+
+	/**
+		Implements the prony algorithm for FIR to IIR approximation, for fixed order = orderFB = orderFF
+		@param h the FIR coefficients
+		@parma order the order of the returned IIR coefficients were number of coefficeints is order +1
+		@return the b (feed forward) and a (feed backward) coefficients with pair.first is b.
+	*/
+	static std::pair<std::vector<double>,std::vector<double>> prony(std::vector<double> h, unsigned int order);
+
+
+	/**
+		Finds roots of polynom @p polynom
+		@param polynom the coefficeints of a polynom where polynom.back() is the x^0 coefficient
+	*/
+	static std::vector<std::complex<double>> findRoots(std::vector<double> polynom);
 
 private:
-
-
 
 	std::vector<SOS> FilterBank;
 

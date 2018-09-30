@@ -258,9 +258,9 @@ void HpeqAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 					if (!paramWID) continue;
 					
 					if (paramWID->paramID == xmlState->getAttributeName(i))
-					{
-						float val = CharacterFunctions::readDoubleValue(xmlState->getAttributeValue(i).getCharPointer());
-						paramWID->setValue(val);
+					{						
+						float val = std::atof(xmlState->getAttributeValue(i).toStdString().c_str());
+						paramWID->setValueNotifyingHost(val);
 
 					}
 				}
@@ -398,8 +398,11 @@ void HpeqAudioProcessor::updateAudioThreadIR()
 		tdConvolution.setImpulseResponse(cachedLiveIR.get());
 		fftConvolution.setImpulseResponse(cachedLiveIR.get());
 		fftPartConvolution.setImpulseResponse(cachedLiveIR.get());
+
+#ifdef ENABLE_PARFILT_WIP
 		//parFiltConvolution.setImpulseResponse(cachedLiveIR.get());
-		
+#endif
+
 		fftPartConvolution.setPartitioningOrder(parameters.partitions->get());
 	}
 }
