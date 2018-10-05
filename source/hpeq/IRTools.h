@@ -44,9 +44,8 @@ namespace IRTools
 	Function smoothes the frequency response with a octave-width band
 		@param ir		the impulse response
 		@param width	kernel width in octaves
-		@param fs		the sample rate
 	*/
-	void octaveSmooth(ImpulseResponse & ir, float width, float fs);
+	void octaveSmooth(ImpulseResponse & ir, float width);
 
 	/**
 		Function normalizes the frequency responses average magnitude response using a auditory weighting function similar to C-weighting.

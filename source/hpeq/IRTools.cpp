@@ -126,8 +126,9 @@ ImpulseResponse  IRTools::truncate(const ImpulseResponse & ir, float dbThreshold
 	return ImpulseResponse(left, right, ir.getSampleRate());
 }
 
-void IRTools::octaveSmooth(ImpulseResponse & ir, float width, float fs)
+void IRTools::octaveSmooth(ImpulseResponse & ir, float width)
 {
+	auto fs = ir.getSampleRate();
 	width = std::max(width, 0.f);
 
 	assert(isPow2(ir.getSize()));

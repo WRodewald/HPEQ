@@ -29,7 +29,6 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 
 	bool makeResizable = true;
 	setResizable(true, makeResizable);
-	//if (makeResizable) addAndMakeVisible(resizeComponent);
 
 	fileSelectorComponent.setImpulseResponseFile(processor.getIRFile());
 
@@ -37,6 +36,18 @@ HpeqAudioProcessorEditor::HpeqAudioProcessorEditor (HpeqAudioProcessor& p)
 	{
 		processor.setIRFile(file);
 	};
+
+	busyIcon.enableAutoUpdater(60);
+	busyIcon.setState(BusyIcon::State::Busy);
+	busyIcon.setAppearance(Colours::lightgrey, 8, 0.15, 0.9);
+
+	busyIcon.setStateCallback([this]()
+	{
+		auto state = processor.getBusyState();
+		return (state == HpeqAudioProcessor::BusyState::Busy) ? BusyIcon::State::Busy : BusyIcon::State::Idle;
+	});
+
+	addAndMakeVisible(busyIcon);
 
 	processor.setIRUpdateListener(this);
 
@@ -91,6 +102,7 @@ void HpeqAudioProcessorEditor::resized()
 
 	impulseResponseView.setBounds(1, 1 + headerHeight, getWidth() - paramViewWidth - 2, getHeight() - headerHeight - 2);
 
+	busyIcon.setBounds(0, 0, headerHeight, headerHeight);
 
 #ifdef WORK_IN_PROGRESS_UI
 	std::vector<Component*> rightSideCtrls = 
@@ -254,3 +266,4 @@ void HpeqAudioProcessorEditor::setUpComboBox(ComboBoxWLabel & box, AudioParamete
 	addAndMakeVisible(box);
 	response->onUpdate();
 }
+

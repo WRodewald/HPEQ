@@ -95,6 +95,7 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 	
 	auto mag2db = [](float mag)
 	{
+		mag = (mag < 0.000001) ? 0.000001 : mag;
 		return 20 * std::log10(mag);
 	};
 
@@ -167,7 +168,7 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
 		{
 			auto f = ir.getSampleRate() * (static_cast<float>(i) / static_cast<float>(fftBuffer.size()));
-			auto dB = mag2db(abs(fftBuffer[i]) + 0.000001);
+			auto dB = mag2db(abs(fftBuffer[i]));
 
 			juce::Point<float> newPoint(f2X(f), dB2Y(dB));
 
@@ -271,7 +272,7 @@ std::pair<float, float> ImpulseResponseViewComponent::getFrequencyDomainDBScale(
 
 		transform->performFFTInPlace(fftBuffer.data());
 
-		for (unsigned int i = 0; i <= 0.5 * fftBuffer.size(); i++)
+		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
 		{
 			auto dB = 20.f * std::log10(abs(fftBuffer[i]) + 0.000001f);
 

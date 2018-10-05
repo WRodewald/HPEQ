@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "AConvolutionEngine.h"
+#include "ThreadSyncable.h"
 
 /**
 	A convolution engine that implements the parallel filterbank IIR approximation method discussed in Bank 2007. 
@@ -80,13 +81,29 @@ public:
 	// Inherited via AConvolutionEngine
 	virtual void process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples) override;
 
+	
 	/**
-		Updates the internel parallel filter bank
-		@param order order of the filter bank were number of parallel second order elements N = 2^order
-		@param lambda warping coefficient
+		Sets the warp coefficient lambda for the IIR approximation. Does not force an update of the filter bank.
+		@parm lambda the warp coefficeints used in the IIR approximation algorithm. Should be between 0..1
 	*/
-	void createNewFilterBank(unsigned int order, float lambda);
+	void setWarpCoefficient(float lambda);
 
+	/**
+		Sets the size of the parallel filter bank. Note that the number of #SOS filters actually used might be less then the number 
+		set with this function.
+		@param numSOSFilters Number of #SOS filters in the parallel filter bank. 
+	*/
+	void setFilterBankSize(unsigned int numSOSFilters);
+
+	/**
+		Creates a new filter bank with given @p lambda and @p numSOSFilters. The function is static to help with
+		multi threading robustness. 
+		@param ir	the impulse response that will be approximated
+		@parm lambda the warp coefficeints used in the IIR approximation algorithm. Should be between 0..1
+		@param numSOSFilters Number of #SOS filters in the parallel filter bank. 
+	*/
+	static FilterBank createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters);
+	
 	/**
 		Implements the prony algorithm for FIR to IIR approximation, for fixed order = orderFB = orderFF
 		@param h the FIR coefficients
@@ -131,25 +148,13 @@ protected:
 	virtual void onImpulseResponseUpdated() override;
 	
 
-private:
-
-	/**
-		Functions checks if a updated filter bank can be loaded. If so, the online filter bank is swapped with the new offline bank.
-		Function might lock but does not dynamically allocate or destroy.
-	*/
-	void updateFilterBank();
 
 private:
 
 	// sync stuff
+	ThreadSyncable<FilterBank> filterBank;
 
-	std::mutex filterBankSyncMutex;
-
-	bool newFilterBankReady{ false };
-	std::unique_ptr<FilterBank> offlineFilterBank;
-	std::unique_ptr<FilterBank> onlineFilterBank;
-
-	unsigned int order{ 5 };
+	unsigned int order{ 32 };
 	float lambda{ 0 };
 
 };

@@ -42,8 +42,15 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 
 #ifdef ENABLE_PARFILT_WIP
 		addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT", "ParFilt" }, 0));
+
+		addParameter(parameters.parFiltWarp = new AudioParameterFloat("ParFiltWarp", "ParFilt War", 0, 1, .50));
+		addParameter(parameters.parFiltOrder = new AudioParameterInt("ParFiltOrder", "ParFilt Order", 4, 7, 5));
+
+		parameters.parFiltWarp->addListener(this);
+		parameters.parFiltOrder->addListener(this);
 #else
 		addParameter(parameters.engine = new AudioParameterChoice("Engine", "Engine", { "Time Domain", "Brute FFT", "Part FFT" }, 0));
+
 #endif
 
 
@@ -56,6 +63,12 @@ HpeqAudioProcessor::HpeqAudioProcessor()
 	
 	parameters.smooth->addListener(this);
 	parameters.partitions->addListener(this);
+	
+
+	parameters.engine->addListener(this);
+	
+
+	startTimer(30);
 
 }
 
@@ -288,7 +301,7 @@ void HpeqAudioProcessor::setIRFile(juce::File file)
 	
 	if (errorCode == IRLoader::ErrorCode::NoError)
 	{
-		updateAndPreProcessIR();
+		shedulePreProcessorRun();
 	}
 	else
 	{
@@ -307,6 +320,11 @@ juce::File HpeqAudioProcessor::getIRFile() const
 	return irFile;
 }
 
+HpeqAudioProcessor::BusyState HpeqAudioProcessor::getBusyState()
+{
+	return checkPreProcessorState();
+}
+
 void HpeqAudioProcessor::setIRUpdateListener(ImpulseResponseUpdateListener * listener)
 {
 	this->irListener = listener;
@@ -316,85 +334,158 @@ void HpeqAudioProcessor::setIRUpdateListener(ImpulseResponseUpdateListener * lis
 	}
 }
 
-void HpeqAudioProcessor::updateAndPreProcessIR()
+void HpeqAudioProcessor::shedulePreProcessorRun()
 {
+	std::map<juce::String, float> lowFadeFreqMap{ 
+			{"Off",		  0},
+			{"20Hz",	 20},
+			{"50Hz",	 50},
+			{"100Hz",	100} };
+	
+		std::map<juce::String, float> highFadeFreqMap{
+			{ "Off",	    0 },
+			{ "5kHz",	 5000 },
+			{ "10kHz",	10000 },
+			{ "20kHz",	20000} };
+
+		std::map<juce::String, float> smoothValueMap{
+			{ "Off",			0.f },
+			{ "1/12 Octave",	1.f / 12.f },
+			{ "1/5 Octave",		1.f / 5.f },
+			{ "1/3 Octave",		1.f / 3.f },
+			{ "1 Octave",		1.f } };
+
+		
+		std::map<juce::String, Engine> engineValueMap {
+			{ "Time Domain",	Engine::TimeDomain},
+			{ "Brute FFT",		Engine::FFTBrute},
+			{ "Part FFT",		Engine::FFTPartitioned},
+			{ "ParFilt",		Engine::ParFilt} };
+
 	// get impulse response from file
 	offlineIR = irLoader.getImpulseResponse();
 
+	// collect configuration
+	PreProcessorConfig cfg;
 
-	if (parameters.monoIR->get())
-	{
-		IRTools::makeMono(offlineIR);
-	}
+	cfg.mono		= parameters.monoIR->get();
+	cfg.normalize	= parameters.normalize->get();
+	cfg.minPhase	= parameters.minPhase->get();
+	cfg.invert		= parameters.invert->get();
 
-	if (parameters.normalize->get())
-	{
-		IRTools::normalize(offlineIR);
-	}
-
-	auto lowFadeText  = parameters.lowFade->getCurrentValueAsText();
-	auto highFadeText = parameters.highFade->getCurrentValueAsText();
-
-	if (lowFadeText != "Off" || highFadeText != "Off")
-	{
-		std::map<juce::String, float> lowFadeFrequencyMap{ 
-			{"Off", 0},
-			{"20Hz", 20 },
-			{"50Hz", 50 },
-			{"100Hz", 100 } };
+	cfg.octaveSmoothWidth = smoothValueMap[parameters.smooth->getCurrentValueAsText()];
+	cfg.lowFadeFreq		  = lowFadeFreqMap[parameters.lowFade->getCurrentValueAsText()];
+	cfg.highFadeFreq	  = highFadeFreqMap[parameters.highFade->getCurrentValueAsText()];
 	
-		std::map<juce::String, float> highFadeFrequencyMap{ 
-			{"Off", 0},
-			{"5kHz",  5000 },
-			{"10kHz", 10000 },
-			{"20kHz", 20000 } };
+	cfg.lowFade  = cfg.lowFadeFreq != 0;
+	cfg.highFade = cfg.highFadeFreq	!= 0;
 
-		unsigned int hpOrder = (lowFadeText != "Off") ? 2 : 0;
-		unsigned int lpOrder = (highFadeText != "Off") ? 2 : 0;
+	cfg.engine = engineValueMap[parameters.engine->getCurrentValueAsText()];
 
-		float hpFreq = lowFadeFrequencyMap[lowFadeText];
-		float lpFreq = highFadeFrequencyMap[highFadeText];
+	cfg.parFiltOrder = parameters.parFiltOrder->get();
+	cfg.parFiltWarp  = parameters.parFiltWarp->get();
 
+	// we simply store the ready to go input for the pre processing in the futureConfig object and check if
+	// we can run it async by calling our timer
 
+	if ((futurePreProcessorInput != nullptr) && (futurePreProcessorInput->cfg == cfg)) return;
 
-		IRTools::fadeOut(offlineIR, hpFreq, lpFreq, hpOrder, lpOrder);
-	}
-		
-	if (parameters.invert->get())
+	auto input = std::unique_ptr<PreProcessorInput>(new PreProcessorInput);
+	input->cfg = cfg;
+	input->ir = irLoader.getImpulseResponse();
+
+	this->futurePreProcessorInput = std::move(input);
+
+	// check right now if we can start the pre processor
+	checkPreProcessorState();	
+}
+
+HpeqAudioProcessor::BusyState  HpeqAudioProcessor::checkPreProcessorState()
+{
+	auto busyState = BusyState::Idle;
+	// check if we have a pre processed IR ready to go
+	if (futurePreProcessorOutput != nullptr)
 	{
-		IRTools::invertMagResponse(offlineIR);
+		using namespace std::chrono_literals;
+
+		std::future_status state = futurePreProcessorOutput->wait_for(1ns);
+		if (state == std::future_status::ready)
+		{
+			auto ir = futurePreProcessorOutput->get().ir;
+			futurePreProcessorOutput = nullptr;
+
+			// we make a copy for offline (main thread) purposes
+			this->offlineIR = *ir;
+			if (irListener) irListener->setUpdateIR(offlineIR);
+
+			// move the original to the audio thread
+			sheduleUpdateForAudioThreadIR(std::move(ir));
+			busyState = BusyState::Idle;
+		}
+		busyState = BusyState::Busy;
 	}
 
+	// we can start a new pre processing run?
+	if (futurePreProcessorOutput == nullptr && futurePreProcessorInput != nullptr)
+	{
+		// get config but reset the stored one
+		auto input = *futurePreProcessorInput;
+		futurePreProcessorInput = nullptr;
+
+		// get ir
+		auto ir = irLoader.getImpulseResponse();
+
+		// create pre processing task
+		std::packaged_task<PreProcessorOutput()> task([this,input]() { return preProcess(input.ir, input.cfg); });
+
+		// create new future object
+		futurePreProcessorOutput = std::unique_ptr<std::future<PreProcessorOutput>>(new std::future<PreProcessorOutput>(task.get_future()));
+
+		// start processing on a different thread
+		std::thread(std::move(task)).detach();
+		busyState = BusyState::Busy;
+	}
+	return busyState;
+}
+
+HpeqAudioProcessor::PreProcessorOutput HpeqAudioProcessor::preProcess(ImpulseResponse ir, PreProcessorConfig cfg)
+{
+	if (cfg.mono) IRTools::makeMono(ir);
+
+	if (cfg.invert) IRTools::invertMagResponse(ir);
+
+	if (cfg.lowFade ||cfg.highFade)
+	{
+		IRTools::fadeOut(ir, cfg.lowFadeFreq, cfg.highFadeFreq, cfg.lowFade ? 2 : 0, cfg.highFade ? 2 : 0);
+	}
+
+	if (cfg.octaveSmoothWidth != 0) IRTools::octaveSmooth(ir, cfg.octaveSmoothWidth);
+
+	if (cfg.normalize) IRTools::normalize(ir);
+
+	if (cfg.minPhase) IRTools::makeMinPhase(ir);
+
+	PreProcessorOutput out;
+
+	out.ir = std::unique_ptr<ImpulseResponse>(new ImpulseResponse(ir));
+
+#ifdef ENABLE_PARFILT_WIP
+	// parfilt needs a bit of special attention and this is certainly a bad smell.
+	// Generally, we would like all engines to behave the same, they get IR's, they process. Done. 
+	// However, the parfilt comes with it's own CPU-intensive approximation method. We can't run it
+	// in main or audio thread. We could pre-render the filter bank and then set the bank but this would render the 
+	// impulse response interface (AConvolutionEngine::setImpulseResponse) useless.
+
+
+	parFiltConvolution.setFilterBankSize(2 << cfg.parFiltOrder);
+	parFiltConvolution.setWarpCoefficient(cfg.parFiltWarp);
+	if (cfg.engine == Engine::ParFilt)
+	{
+		parFiltConvolution.setImpulseResponse(out.ir.get());
+	}
+#endif
 	
-
-	auto smoothValText = parameters.smooth->getCurrentValueAsText();
-
-	if (smoothValText == "1/12 Octave")
-	{
-		IRTools::octaveSmooth(offlineIR, 1.f / 12.f, getSampleRate());
-	}
-	if (smoothValText == "1/5 Octave")
-	{
-		IRTools::octaveSmooth(offlineIR, 1.f / 5.f, getSampleRate());
-	}
-	else if (smoothValText == "1/3 Octave")
-	{
-		IRTools::octaveSmooth(offlineIR, 1.f / 3.f, getSampleRate());
-	}
-	else if (smoothValText == "1 Octave")
-	{
-		IRTools::octaveSmooth(offlineIR, 1.f, getSampleRate());
-	}
-	
-	if (parameters.minPhase->get())
-	{
-		IRTools::makeMinPhase(offlineIR);
-	}
-	
-	if (irListener) irListener->setUpdateIR(offlineIR);
-
-	// notify about new impulse response
-	sheduleUpdateForAudioThreadIR();
+	return out;
 }
 
 void HpeqAudioProcessor::updateAudioThreadIR()
@@ -410,26 +501,30 @@ void HpeqAudioProcessor::updateAudioThreadIR()
 		fftConvolution.setImpulseResponse(cachedLiveIR.get());
 		fftPartConvolution.setImpulseResponse(cachedLiveIR.get());
 
-#ifdef ENABLE_PARFILT_WIP
-		parFiltConvolution.setImpulseResponse(cachedLiveIR.get());
-#endif
+
 
 		fftPartConvolution.setPartitioningOrder(parameters.partitions->get());
 	}
 }
 
-void HpeqAudioProcessor::sheduleUpdateForAudioThreadIR()
+void HpeqAudioProcessor::sheduleUpdateForAudioThreadIR(std::unique_ptr<ImpulseResponse> ir)
 {
 	std::lock_guard<std::mutex> lock(irSwapMutex);
 
-	cachedSwapIR = std::unique_ptr<ImpulseResponse>(new ImpulseResponse(offlineIR));
+	cachedSwapIR = std::move(ir);
 
 	irNeedsSwap = true;
 }
 
+
+void HpeqAudioProcessor::timerCallback()
+{
+	checkPreProcessorState();
+}
+
 void HpeqAudioProcessor::handleAsyncUpdate()
 {
-	updateAndPreProcessIR();
+	shedulePreProcessorRun();
 }
 
 void HpeqAudioProcessor::parameterValueChanged(int parameterIndex, float newValue)

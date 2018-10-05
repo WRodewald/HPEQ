@@ -2,6 +2,8 @@
 
 #include "ImpulseResponse.h"
 
+
+
 /**
 	Class presents an interface for convolution engines
 */
@@ -20,7 +22,7 @@ public:
 		@param numSamples the number of samples in the input  output buffers
 	*/
 	virtual void process(const float *readL, const float *readR,  float *writeL, float *writeR, unsigned int numSamples) = 0;
-	
+		
 	/**
 		Sets the impulse response pointer. if pointer is nullptr, internally switches to dirac impulse response.
 	*/
@@ -28,7 +30,6 @@ public:
 
 	/**
 		Called during setImpulseResponse to prepare the convolution engine for a new impulse response.
-		Function is called in Audio Thread.
 	*/
 	virtual void onImpulseResponseUpdated() = 0;
 

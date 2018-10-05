@@ -503,10 +503,16 @@
       <FILE id="rRchlq" name="StaticQueue.h" compile="0" resource="0" file="Source/HPEQ/StaticQueue.h"/>
       <FILE id="vLtv6g" name="StaticRingBuffer.h" compile="0" resource="0"
             file="Source/HPEQ/StaticRingBuffer.h"/>
+      <FILE id="LMKGio" name="ThreadSyncable.h" compile="0" resource="0"
+            file="Source/HPEQ/ThreadSyncable.h"/>
       <FILE id="XMusVe" name="TimeDomainConvolution.h" compile="0" resource="0"
             file="Source/HPEQ/TimeDomainConvolution.h"/>
     </GROUP>
     <GROUP id="{3AE6FE1F-A288-89D5-BB89-857E2F024A76}" name="juce">
+      <FILE id="uWzr9G" name="JuceUtility.cpp" compile="1" resource="0" file="source/juce/JuceUtility.cpp"/>
+      <FILE id="cfM7Zt" name="JuceUtility.h" compile="0" resource="0" file="source/juce/JuceUtility.h"/>
+      <FILE id="QzAeSQ" name="BusyIcon.cpp" compile="1" resource="0" file="source/juce/BusyIcon.cpp"/>
+      <FILE id="BhWdP3" name="BusyIcon.h" compile="0" resource="0" file="source/juce/BusyIcon.h"/>
       <FILE id="SlzbGs" name="ImpulseResponseViewComponent.cpp" compile="1"
             resource="0" file="source/juce/ImpulseResponseViewComponent.cpp"/>
       <FILE id="sinzuw" name="ImpulseResponseViewComponent.h" compile="0"

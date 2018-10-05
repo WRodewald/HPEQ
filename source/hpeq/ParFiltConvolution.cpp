@@ -15,15 +15,17 @@ ParFiltConvolution::ParFiltConvolution()
 
 void ParFiltConvolution::process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples)
 {
-	checkUpdatedFilterbank();
+	filterBank.update();
 
-	if (onlineFilterBank == nullptr) return;
+	if (filterBank.get() == nullptr) return;
+
+	auto bank = filterBank.get();
 
 	for (int i = 0; i < numSamples; i++)
 	{
 		auto in = 0.5f * (readL[i] + readR[i]);
-		float out = onlineFilterBank->b0 * in;
-		for (auto &filter : onlineFilterBank->parallelFilters)
+		float out = bank->b0 * in;
+		for (auto &filter : bank->parallelFilters)
 		{
 			out += filter.tick(in);
 		}
@@ -31,34 +33,44 @@ void ParFiltConvolution::process(const float * readL, const float * readR, float
 	}
 }
 
-void ParFiltConvolution::createNewFilterBank(unsigned int order, float lambda)
-{	
-	auto ir = getIR();
-	auto preparedResponse = *getIR();
+void ParFiltConvolution::setWarpCoefficient(float lambda)
+{
+	this->lambda = std::min(std::max(lambda, 0.f), 1.f);
+}
 
-	unsigned int numSOSs = 2 << order;
-	unsigned int iirOrder = 2 * numSOSs;
+void ParFiltConvolution::setFilterBankSize(unsigned int numSOSFilters)
+{
+	this->order = std::max(1U, numSOSFilters);
+}
 
-	lambda = std::max(0.f, std::min(1.f, lambda));
-	
+ParFiltConvolution::FilterBank ParFiltConvolution::createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters)
+{
+	lambda = std::min(std::max(lambda, 0.f), 1.f);
+	numSOSFilters = std::max(1U, numSOSFilters);
+
+
 	// normalize
-	IRTools::normalize(preparedResponse);
+	IRTools::normalize(ir);
 
 	// make min phase
-	IRTools::makeMinPhase(preparedResponse);
+	IRTools::makeMinPhase(ir);
 
 	// mono support only right now
-	IRTools::makeMono(preparedResponse);
+	IRTools::makeMono(ir);
+
+	IRTools::truncate(ir, -40, false);
 	
 	// warp the response
-	preparedResponse = IRTools::warp(preparedResponse, lambda, ir->getSize());
+	auto warpedIR = IRTools::warp(ir, lambda, ir.getSize());
 	
 	// FIR vetor
-	std::vector<double> h(preparedResponse.getLeftVector().begin(), preparedResponse.getLeftVector().end());
-	
+	std::vector<double> hWarped(warpedIR.getLeftVector().begin(), warpedIR.getLeftVector().end());
 
+	// FIR vetor
+	std::vector<double> h(ir.getLeftVector().begin(), ir.getLeftVector().end());
+	
 	// prony iir approximation
-	auto iir = prony(h, iirOrder);
+	auto iir = prony(hWarped, numSOSFilters);
 
 	// find poles 
 	auto poles = roots(iir.second);
@@ -69,28 +81,13 @@ void ParFiltConvolution::createNewFilterBank(unsigned int order, float lambda)
 	// do the thing
 	auto filterBank = approximateIR(h, poles, 1);
 
-	// sync 
-	{
-		std::lock_guard<std::mutex>  syncLock(filterBankSyncMutex);
-
-		this->offlineFilterBank = std::unique_ptr<FilterBank>(new FilterBank(filterBank));
-		this->newFilterBankReady = true;
-	}
+	return filterBank;
 }
 
 
 void ParFiltConvolution::onImpulseResponseUpdated()
-{
-	// create new thread that generates the filter bank for us
-	auto creatorThread = std::thread([=]()
-	{
-		this->createNewFilterBank(this->order, this->lambda); 
-	});
-	
-	// let thread do its thing
-	creatorThread.detach();
-	
-	return;
+{	
+	this->filterBank.set(createNewFilterBank(*getIR(), lambda, order));
 }
 
 std::pair<std::vector<double>, std::vector<double>> ParFiltConvolution::prony(std::vector<double> h, unsigned int iirOrder)
@@ -261,11 +258,9 @@ ParFiltConvolution::FilterBank ParFiltConvolution::approximateIR(std::vector<dou
 	Mat b = M.transpose() * y;
 
 	Mat par = A.fullPivHouseholderQr().solve(b);
-
-
+	
 	std::vector<SOS<float>> secondOrderSections;
-
-
+	
 	for (int i = 0; i < (static_cast<int>(poles.size()) - 1); i += 2)
 	{
 		SOS<float>::Coeffs coeffs;
@@ -397,15 +392,4 @@ std::vector<std::complex<double>> ParFiltConvolution::sortPoles(std::vector<std:
 	}
 
 	return poles;
-}
-
-void ParFiltConvolution::checkUpdatedFilterbank()
-{
-	std::lock_guard<std::mutex> lock(filterBankSyncMutex);
-
-	if (newFilterBankReady)
-	{
-		std::swap(onlineFilterBank, offlineFilterBank);
-		newFilterBankReady = false;
-	}
 }
