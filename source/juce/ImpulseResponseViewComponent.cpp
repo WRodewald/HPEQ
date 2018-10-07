@@ -165,7 +165,9 @@ void ImpulseResponseViewComponent::painSpectrum(Graphics & g, juce::Rectangle<in
 
 		juce::Point<float> lastPoint(f2X(fMin), dB2Y(mag2db(std::abs(fftBuffer[0]))));
 
-		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
+		unsigned int stepSize = (fftBuffer.size() > 4096) ? std::ceil(fftBuffer.size() / 4096.f) : 1;
+
+		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i+= stepSize)
 		{
 			auto f = ir.getSampleRate() * (static_cast<float>(i) / static_cast<float>(fftBuffer.size()));
 			auto dB = mag2db(abs(fftBuffer[i]));
@@ -217,7 +219,10 @@ void ImpulseResponseViewComponent::paintImpulseResponse(Graphics & g, juce::Rect
 
 		juce::Point<float> lastPoint(t2X(tMin), y2Y(buffer[0]));
 
-		for (unsigned int i = 1; i < buffer.size(); i++)
+
+		unsigned int stepSize = (buffer.size() > 4096) ? std::ceil(buffer.size() / 4096.f) : 1;
+
+		for (unsigned int i = 1; i < buffer.size(); i+= stepSize)
 		{
 			auto t = static_cast<float>(i) / ir.getSampleRate();
 			auto y = buffer[i];
@@ -271,6 +276,8 @@ std::pair<float, float> ImpulseResponseViewComponent::getFrequencyDomainDBScale(
 		fftBuffer.resize(fftSize, 0); // zero pad
 
 		transform->performFFTInPlace(fftBuffer.data());
+
+		maxDB = 20.f * std::log10(abs(fftBuffer[0]) + 0.000001f);
 
 		for (unsigned int i = 1; i <= 0.5 * fftBuffer.size(); i++)
 		{

@@ -9,22 +9,19 @@
 
 ParFiltConvolution::ParFiltConvolution()
 {
-	onImpulseResponseUpdated();
+	onImpulseResponseUpdate();
 }
 
 
 void ParFiltConvolution::process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples)
 {
-	filterBank.update();
-
-	if (filterBank.get() == nullptr) return;
-
-	auto bank = filterBank.get();
+	updateData();
+	auto bank = getData();
 
 	for (int i = 0; i < numSamples; i++)
 	{
 		auto in = 0.5f * (readL[i] + readR[i]);
-		float out = bank->b0 * in;
+		float out = bank->firFilter.tick(in);
 		for (auto &filter : bank->parallelFilters)
 		{
 			out += filter.tick(in);
@@ -38,17 +35,33 @@ void ParFiltConvolution::setWarpCoefficient(float lambda)
 	this->lambda = std::min(std::max(lambda, 0.f), 1.f);
 }
 
-void ParFiltConvolution::setFilterBankSize(unsigned int numSOSFilters)
+void ParFiltConvolution::setFilterBankSize(unsigned int numSOSFilters, unsigned int firOrder)
 {
-	this->order = std::max(1U, numSOSFilters);
+	this->numSOSSections = std::max(1U, numSOSFilters);
+	this->firOrder = std::max(0U, firOrder);
 }
 
-ParFiltConvolution::FilterBank ParFiltConvolution::createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters)
+FilterBank ParFiltConvolution::createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters, unsigned int firOrder)
 {
+
 	lambda = std::min(std::max(lambda, 0.f), 1.f);
 	numSOSFilters = std::max(1U, numSOSFilters);
+	
+	firOrder = std::max(0U, firOrder);
 
+	bool canBeSimpleFIR = firOrder >= (ir.getSize() - 1);
 
+	// if we can represent the impulse response with a simple FIR
+	if (canBeSimpleFIR)
+	{
+		firOrder = ir.getSize() - 1;
+		numSOSFilters = 0;
+		lambda = 0;
+	}
+
+	// limit second order sections to FIR order
+	numSOSFilters = std::min(numSOSFilters, ir.getSize()-1);
+	
 	// normalize
 	IRTools::normalize(ir);
 
@@ -58,7 +71,7 @@ ParFiltConvolution::FilterBank ParFiltConvolution::createNewFilterBank(ImpulseRe
 	// mono support only right now
 	IRTools::makeMono(ir);
 
-	IRTools::truncate(ir, -40, false);
+	if (ir.getSize() > MaxInputFIRSize) ir.resize(MaxInputFIRSize);
 	
 	// warp the response
 	auto warpedIR = IRTools::warp(ir, lambda, ir.getSize());
@@ -79,15 +92,9 @@ ParFiltConvolution::FilterBank ParFiltConvolution::createNewFilterBank(ImpulseRe
 	for (auto & pole : poles) pole = (pole + std::complex<double>(lambda)) / (1. + std::complex<double>(lambda) * pole);
 
 	// do the thing
-	auto filterBank = approximateIR(h, poles, 1);
+	auto filterBank = approximateIR(h, poles, firOrder+1);
 
 	return filterBank;
-}
-
-
-void ParFiltConvolution::onImpulseResponseUpdated()
-{	
-	this->filterBank.set(createNewFilterBank(*getIR(), lambda, order));
 }
 
 std::pair<std::vector<double>, std::vector<double>> ParFiltConvolution::prony(std::vector<double> h, unsigned int iirOrder)
@@ -197,15 +204,18 @@ std::vector<std::complex<double>> ParFiltConvolution::roots(std::vector<double> 
 	return roots;
 }
 
-ParFiltConvolution::FilterBank ParFiltConvolution::approximateIR(std::vector<double> ir, std::vector<std::complex<double>> poles, unsigned int firOrder)
+FilterBank ParFiltConvolution::approximateIR(std::vector<double> ir, std::vector<std::complex<double>> poles, unsigned int firCoefficeints)
 {
 	using Mat = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>;
+
+
+	firCoefficeints = std::min(ir.size(), static_cast<size_t>(firCoefficeints));
 
 	poles = sortPoles(poles);
 
 	// matrix thingy
 	Mat M;
-	M.resize(ir.size(), poles.size() + firOrder);
+	M.resize(ir.size(), poles.size() + firCoefficeints);
 	M.fill(0);
 
 	// create artificial impulse responses
@@ -244,7 +254,7 @@ ParFiltConvolution::FilterBank ParFiltConvolution::approximateIR(std::vector<dou
 	}
 
 	// fir part
-	for (int i = 0; i < firOrder; i++)
+	for (int i = 0; i < firCoefficeints; i++)
 	{
 		M(i, column) = 1;
 		column += 1;
@@ -293,9 +303,16 @@ ParFiltConvolution::FilterBank ParFiltConvolution::approximateIR(std::vector<dou
 	FilterBank fiterBank;
 	fiterBank.parallelFilters = secondOrderSections;
 
-	if (firOrder > 0)
+	if (firCoefficeints > 0)
 	{
-		fiterBank.b0 = par(poles.size());
+		FIRFilter<float, 16>::Coeffs coeffs;
+		coeffs.b.fill(0);
+
+		for (int i = 0; i < firCoefficeints; i++)
+		{
+			coeffs.b[i] = par(poles.size() + i);
+		}
+		fiterBank.firFilter.setCoeffs(coeffs);
 	}
 
 	// lets make a stability pass
@@ -392,4 +409,9 @@ std::vector<std::complex<double>> ParFiltConvolution::sortPoles(std::vector<std:
 	}
 
 	return poles;
+}
+
+FilterBank ParFiltConvolution::preProcess(const ImpulseResponse & ir)
+{
+	return createNewFilterBank(*getImpulseResponse(), lambda, numSOSSections, firOrder);
 }

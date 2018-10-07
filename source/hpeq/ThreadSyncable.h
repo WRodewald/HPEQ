@@ -17,11 +17,14 @@ public:
 	*/
 	void set(const T& data);
 
+	
+
 	/**
 		Polls for an update and if necessary swaps the live thread data with the offline data. 
 		Should be called from the time sensitive thread. Function locks a mutex shared with #set but generally has a low CPU footprint. (No allocation)
-	*/
-	void update();
+		@return true if the data was updated.
+		*/
+	bool update();
 
 	/**
 		Returns a raw access to the live data. Might return nullptr. 
@@ -32,8 +35,8 @@ private:
 	std::mutex syncMutex;
 	bool updated{ false };
 
-	std::unique_ptr<T> offlineData;
-	std::unique_ptr<T> liveData;
+	std::unique_ptr<T> offlineData{ std::unique_ptr<T>(new T()) };
+	std::unique_ptr<T> liveData{ std::unique_ptr<T>(new T()) };
 };
 
 template<typename T>
@@ -46,7 +49,7 @@ inline void ThreadSyncable<T>::set(const T & data)
 }
 
 template<typename T>
-inline void ThreadSyncable<T>::update()
+inline bool ThreadSyncable<T>::update()
 {
 	std::lock_guard<std::mutex> lock(syncMutex);
 
@@ -54,7 +57,9 @@ inline void ThreadSyncable<T>::update()
 	{
 		std::swap(offlineData, liveData);
 		updated = false;
+		return true;
 	}
+	return false;
 }
 
 template<typename T>

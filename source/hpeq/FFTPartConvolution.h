@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AConvolutionEngine.h"
+#include "ASyncedConvolutionEngine.h"
 #include "AFourierTransformFactory.h"
 #include "StaticQueue.h"
 #include "IRTools.h"
@@ -16,11 +16,10 @@
 
 	The engine implements the frequency delay line approach discussed in Eric Battenberg, Rimas Avizienis 2011 to prevent unnecessary FFT calls.
 	
-
 	@param MaxSize maximum supported impulse response time, needs to be power of 2
 */
 template<unsigned int MaxSize>
-class FFTPartConvolution : public AConvolutionEngine
+class FFTPartConvolution : public  ASyncedConvolutionEngine<ImpulseResponse>
 {
 private:
 	unsigned int MinOrder = 5;
@@ -31,13 +30,18 @@ public:
 
 	// Inherited via AConvolutionEngine
 	virtual void process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples) override;
-	virtual void onImpulseResponseUpdated() override;
-
+	
 	/*
 		Sets the number of partitions used to split the impulse response with number P = 2^order
 		@param order the order for the partitioning where the number of partition equals P = 2^order
 	**/
 	void setPartitioningOrder(unsigned int order);
+
+protected:
+
+	// Inherited via ASyncedConvolutionEngine
+	virtual void onDataUpdate() override;
+	virtual ImpulseResponse preProcess(const ImpulseResponse & ir) override;
 
 private:
 
@@ -88,7 +92,6 @@ private:
 
 	// index of the current partition;
 	unsigned int currentPartition{ 0 };
-
 };
 
 template<unsigned int MaxSize>
@@ -101,12 +104,14 @@ inline FFTPartConvolution<MaxSize>::FFTPartConvolution()
 		fftEngines[order] = std::unique_ptr<AFourierTransform>(AFourierTransformFactory::FourierTransform(order));
 	}
 
-	onImpulseResponseUpdated();
+	onImpulseResponseUpdate();
 }
 
 template<unsigned int MaxSize>
 inline void FFTPartConvolution<MaxSize>::process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples)
 {
+	updateData();
+
 	for (int i = 0; i < numSamples; i++)
 	{
 		// cache input in audio working buffer
@@ -128,9 +133,9 @@ inline void FFTPartConvolution<MaxSize>::process(const float * readL, const floa
 
 
 template<unsigned int MaxSize>
-inline void FFTPartConvolution<MaxSize>::onImpulseResponseUpdated()
+inline void FFTPartConvolution<MaxSize>::onDataUpdate()
 {
-	unsigned int size = getIR()->getSize();
+	unsigned int size = getData()->getSize();
 	size = IRTools::nextPow2(size);
 
 	assert(size <= MaxSize);
@@ -176,10 +181,16 @@ inline void FFTPartConvolution<MaxSize>::onImpulseResponseUpdated()
 }
 
 template<unsigned int MaxSize>
+inline ImpulseResponse FFTPartConvolution<MaxSize>::preProcess(const ImpulseResponse & ir)
+{
+	return ir;
+}
+
+template<unsigned int MaxSize>
 inline void FFTPartConvolution<MaxSize>::setPartitioningOrder(unsigned int order)
 {
 	this->requestedPartOrder = order;
-	onImpulseResponseUpdated();
+	onImpulseResponseUpdate();
 }
 
 template<unsigned int MaxSize>
@@ -196,14 +207,14 @@ inline void FFTPartConvolution<MaxSize>::updateKernelFFT()
 	{
 		kernelFFTs[c].fill(0);
 
-		auto buffer = getIR()->getChannel(c);
+		auto buffer = getData()->getChannel(c);
 
 		for (int p = 0; p < numPartitions; p++)
 		{
 			unsigned int irBufferOffset  = p * currentFFTSize;
 			unsigned int fftBufferOffset = 2 * irBufferOffset;
 
-			unsigned int irMaxPos = std::min(getIR()->getSize() - irBufferOffset, currentFFTSize);
+			unsigned int irMaxPos = std::min(getData()->getSize() - irBufferOffset, currentFFTSize);
 			for (int i = 0; i < irMaxPos; i++)
 			{
 				kernelFFTs[c][i + fftBufferOffset] = buffer[i + irBufferOffset];

@@ -1,18 +1,14 @@
 var searchData=
 [
-  ['setcoeff',['setCoeff',['../class_i_r_tools_1_1_allpass_first_orer.html#af9a73621bec9d38c106e3b933ffad635',1,'IRTools::AllpassFirstOrer']]],
-  ['setcoeffs',['setCoeffs',['../class_par_filt_convolution_1_1_s_o_s.html#a53062b74d7ba24f5b01eed63727b5288',1,'ParFiltConvolution::SOS::setCoeffs(const T &amp;b0, const T &amp;b1, const T &amp;b2, const T &amp;a1, const T &amp;a2)'],['../class_par_filt_convolution_1_1_s_o_s.html#a31e10f1371bb6b517e9c8606313a31ee',1,'ParFiltConvolution::SOS::setCoeffs(Coeffs coeffs)']]],
-  ['setimpulseresponse',['setImpulseResponse',['../class_a_convolution_engine.html#afffdbfb2d93772f4b9d4cc4325147d8c',1,'AConvolutionEngine::setImpulseResponse()'],['../class_impulse_response_view_component.html#af87d25e56d9aa6ec78807fe85a46da72',1,'ImpulseResponseViewComponent::setImpulseResponse()']]],
-  ['setimpulseresponsefile',['setImpulseResponseFile',['../class_i_r_file_selector_component.html#a5ccf54a2acf3ee15a930145c535ba14d',1,'IRFileSelectorComponent']]],
-  ['setlength',['setLength',['../class_static_ring_buffer.html#a084f91feb8650bde1bde7de8c2c59b7f',1,'StaticRingBuffer']]],
-  ['setlengthandresize',['setLengthAndResize',['../class_static_ring_buffer.html#a00d74c4706c5ff36983669430e83faf3',1,'StaticRingBuffer']]],
-  ['setsize',['setSize',['../class_static_ring_buffer.html#a553cf9094d3ff8e918e94c3512ac40e5',1,'StaticRingBuffer::setSize(unsigned int size, const T &amp;fillVal)'],['../class_static_ring_buffer.html#adfe337ab10308aa7d56397ab0b4f3832',1,'StaticRingBuffer::setSize(unsigned int size)']]],
-  ['setupdateir',['setUpdateIR',['../class_impulse_response_update_listener.html#a4a2235d4b0c2c378900b28de43489189',1,'ImpulseResponseUpdateListener']]],
-  ['sortpoles',['sortPoles',['../class_par_filt_convolution.html#aff207c7035f7e1c07cd8ac4a43c6ddbb',1,'ParFiltConvolution']]],
-  ['sos',['SOS',['../class_par_filt_convolution_1_1_s_o_s.html',1,'ParFiltConvolution']]],
-  ['staticlog2',['staticLog2',['../namespace_i_r_tools.html#ace07089657268ab98a380eab827a2cfa',1,'IRTools']]],
-  ['staticqueue',['StaticQueue',['../class_static_queue.html',1,'']]],
-  ['staticqueue_3c_20float_2c_20maxsize_20_3e',['StaticQueue&lt; float, MaxSize &gt;',['../class_static_queue.html',1,'']]],
-  ['staticringbuffer',['StaticRingBuffer',['../class_static_ring_buffer.html',1,'']]],
-  ['staticringbuffer_3c_20float_2c_20maxsize_20_3e',['StaticRingBuffer&lt; float, MaxSize &gt;',['../class_static_ring_buffer.html',1,'']]]
+  ['parfiltconvolution',['ParFiltConvolution',['../class_par_filt_convolution.html',1,'']]],
+  ['performfft',['performFFT',['../class_a_fourier_transform.html#a67bb2d7d686a1024fdd55733ec8023b4',1,'AFourierTransform::performFFT()'],['../class_juce_fourier_transform.html#a736203f48565cc70127130eec4a6988c',1,'JuceFourierTransform::performFFT()']]],
+  ['performfftinplace',['performFFTInPlace',['../class_a_fourier_transform.html#a41127459bb0463655b7a8b7890f980f8',1,'AFourierTransform::performFFTInPlace()'],['../class_juce_fourier_transform.html#a4ca5aeab3cc1e4ec0a23c4cdf7a08e82',1,'JuceFourierTransform::performFFTInPlace()']]],
+  ['performifft',['performIFFT',['../class_a_fourier_transform.html#ab8f581d4303c96086f9f4fa8c68aec7a',1,'AFourierTransform::performIFFT()'],['../class_juce_fourier_transform.html#ae29b4859d922c5cc8bf21e682d8c282a',1,'JuceFourierTransform::performIFFT()']]],
+  ['performifftinplace',['performIFFTInPlace',['../class_a_fourier_transform.html#a5f645422c77271836252edea0abfd91c',1,'AFourierTransform::performIFFTInPlace()'],['../class_juce_fourier_transform.html#ad4ced6f8d45139aecf90b0995a835d01',1,'JuceFourierTransform::performIFFTInPlace()']]],
+  ['poly',['poly',['../class_par_filt_convolution.html#a7a0001e4f70f3fe4b7a7e73416f75767',1,'ParFiltConvolution']]],
+  ['preprocess',['preProcess',['../class_a_synced_convolution_engine.html#aae50edb05298e0829f4a0fe47952e858',1,'ASyncedConvolutionEngine::preProcess()'],['../class_f_f_t_convolution.html#a7261d2c1c7db5e3dc0ac84c07c5cedbb',1,'FFTConvolution::preProcess()'],['../class_f_f_t_part_convolution.html#ad6d42b68f955ddc85b131501436a4dc5',1,'FFTPartConvolution::preProcess()'],['../class_time_domain_convolution.html#ae47974e3b226d29abc7e5c27d6a0e913',1,'TimeDomainConvolution::preProcess()']]],
+  ['process',['process',['../class_a_convolution_engine.html#aab0a3eca5ad56f9f66b752ab018e493a',1,'AConvolutionEngine::process()'],['../class_f_f_t_convolution.html#ae53c96b6dd19f696cb0355d402230ee2',1,'FFTConvolution::process()'],['../class_f_f_t_part_convolution.html#a35bc1ad928a0c6786c2672224153bddb',1,'FFTPartConvolution::process()'],['../class_par_filt_convolution.html#aa334c679ae28432410c67c14b42b561d',1,'ParFiltConvolution::process()'],['../class_time_domain_convolution.html#a038623e13abb6b8f000a7212848ebe10',1,'TimeDomainConvolution::process()']]],
+  ['prony',['prony',['../class_par_filt_convolution.html#a1e475a1800449c2fd815be3bfdc00872',1,'ParFiltConvolution']]],
+  ['pull',['pull',['../class_static_queue.html#a2e789e43a428e6d7936938628e174128',1,'StaticQueue']]],
+  ['push',['push',['../class_static_queue.html#a9a0183878e0b6d4c3781abbc67faa6fc',1,'StaticQueue::push(const T &amp;input)'],['../class_static_queue.html#a221fb1d2107cce76a6feed654b357cc2',1,'StaticQueue::push(const T &amp;input, unsigned int N)']]]
 ];

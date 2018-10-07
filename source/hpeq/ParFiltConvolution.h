@@ -3,21 +3,15 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <array>
 
-#include "AConvolutionEngine.h"
+#include "ASyncedConvolutionEngine.h"
 #include "ThreadSyncable.h"
 
-/**
-	A convolution engine that implements the parallel filterbank IIR approximation method discussed in Bank 2007. 
-	(Direct design of parallel second-order filters for instrument bodymodeling) 
-	Work In Progress!
-*/
-class ParFiltConvolution : public AConvolutionEngine
+namespace
 {
-public:
-
 	/**
-		A simple second order section filter topology with low level coefficient access
+	A simple second order section filter topology with low level coefficient access
 	*/
 	template<typename T>
 	class SOS
@@ -34,19 +28,19 @@ public:
 		};
 
 		/**
-			Processes a single filter sample
-			@param input input sample
-			@return output sample
+		Processes a single filter sample
+		@param input input sample
+		@return output sample
 		*/
 		inline T tick(const T & input);
 
 		/**
-			Directly sets coefficients b0, b1, b2 (feed forward) and a1, a2 (feed backward)
+		Directly sets coefficients b0, b1, b2 (feed forward) and a1, a2 (feed backward)
 		*/
 		inline void setCoeffs(const T& b0, const T& b1, const T& b2, const T& a1, const T& a2);
 
 		/**
-			Directly sets coefficients via coeffs struct
+		Directly sets coefficients via coeffs struct
 		*/
 		inline void setCoeffs(Coeffs coeffs);
 
@@ -54,7 +48,7 @@ public:
 		Returns the current coefficients
 		*/
 		inline Coeffs getCoeffs() { return coeffs; };
-		
+
 	private:
 		T z1{ 0 };
 		T z2{ 0 };
@@ -63,16 +57,78 @@ public:
 
 	};
 
+
 	/**
-		A small unility class that contains filters to be used during processing.	
+		A simple low order FIR filter topology
+	*/
+	template<typename T, unsigned int MaxOrder>
+	class FIRFilter
+	{
+	public:
+		struct Coeffs
+		{
+			std::array<T, MaxOrder + 1> b;
+		};
+
+	public:
+		FIRFilter()
+		{
+			z.fill(0);
+			coeffs.b.fill(0);
+			coeffs.b[0] = 1;
+		}
+
+	
+
+		/**
+			Processes a single filter sample
+			@param input input sample
+			@return output sample
+		*/
+		inline T tick(const T & input);
+
+		/**
+			Directly sets coefficients via coeffs struct
+		*/
+		inline void setCoeffs(Coeffs coeffs);
+
+		/**
+			Returns the current coefficients
+		*/
+		inline Coeffs getCoeffs() { return coeffs; };
+
+	private:
+		std::array<T, MaxOrder> z;
+
+		Coeffs coeffs;
+		unsigned int curOrder{ 1 };
+
+	};
+
+	/**
+		A small unility class that contains filters to be used during processing.
 	*/
 	struct FilterBank
 	{
 		std::vector<SOS<float>> parallelFilters;
 
-		float b0{ 1 }; // parallel feed forward coefficient;
+		FIRFilter<float, 16> firFilter;
 	};
 
+}
+
+/**
+	A convolution engine that implements the parallel filterbank IIR approximation method discussed in Bank 2007. 
+	(Direct design of parallel second-order filters for instrument bodymodeling) 
+	Work In Progress!
+*/
+class ParFiltConvolution : public ASyncedConvolutionEngine<FilterBank>
+{
+public:
+	/**
+		Maximum size of target FIR filter. If higher, FIR will be truncated after min phase conversion.
+	*/
+	static const int MaxInputFIRSize{ 4096 }; 
 
 public:
 
@@ -92,8 +148,9 @@ public:
 		Sets the size of the parallel filter bank. Note that the number of #SOS filters actually used might be less then the number 
 		set with this function.
 		@param numSOSFilters Number of #SOS filters in the parallel filter bank. 
+		@param firOrder Order of parallel FIR section. 
 	*/
-	void setFilterBankSize(unsigned int numSOSFilters);
+	void setFilterBankSize(unsigned int numSOSFilters, unsigned int firOrder);
 
 	/**
 		Creates a new filter bank with given @p lambda and @p numSOSFilters. The function is static to help with
@@ -101,8 +158,9 @@ public:
 		@param ir	the impulse response that will be approximated
 		@parm lambda the warp coefficeints used in the IIR approximation algorithm. Should be between 0..1
 		@param numSOSFilters Number of #SOS filters in the parallel filter bank. 
+		@param firOrder Order of parallel FIR section. 
 	*/
-	static FilterBank createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters);
+	static FilterBank createNewFilterBank(ImpulseResponse ir, float lambda, unsigned int numSOSFilters, unsigned int firOrder);
 	
 	/**
 		Implements the prony algorithm for FIR to IIR approximation, for fixed order = orderFB = orderFF
@@ -144,23 +202,22 @@ public:
 	*/
 	static std::vector<std::complex<double>> sortPoles(std::vector<std::complex<double>> input);
 
-protected:
-	virtual void onImpulseResponseUpdated() override;
-	
 
 
 private:
-
-	// sync stuff
-	ThreadSyncable<FilterBank> filterBank;
-
-	unsigned int order{ 32 };
+	
+	unsigned int numSOSSections{ 32 };
+	unsigned int firOrder{ 0 };
 	float lambda{ 0 };
+
+
+	// Inherited via ASyncedConvolutionEngine
+	virtual FilterBank preProcess(const ImpulseResponse & ir) override;
 
 };
 
 template<typename T>
-inline T ParFiltConvolution::SOS<T>::tick(const T& input)
+inline T SOS<T>::tick(const T& input)
 {
 	auto out = coeffs.b0 * input + z1;
 	z1		 = coeffs.b1 * input + z2 - coeffs.a1 * out;
@@ -170,7 +227,7 @@ inline T ParFiltConvolution::SOS<T>::tick(const T& input)
 }
 
 template<typename T>
-inline void ParFiltConvolution::SOS<T>::setCoeffs(const T& b0, const T& b1, const T& b2, const T& a1, const T& a2)
+inline void SOS<T>::setCoeffs(const T& b0, const T& b1, const T& b2, const T& a1, const T& a2)
 {
 	this->coeffs.b0 = b0; 
 	this->coeffs.b1 = b1;
@@ -180,7 +237,29 @@ inline void ParFiltConvolution::SOS<T>::setCoeffs(const T& b0, const T& b1, cons
 }
 
 template<typename T>
-inline void ParFiltConvolution::SOS<T>::setCoeffs(Coeffs coeffs)
+inline void SOS<T>::setCoeffs(Coeffs coeffs)
 {
 	this->coeffs = coeffs;
+}
+
+template<typename T, unsigned int MaxOrder>
+inline T FIRFilter<T, MaxOrder>::tick(const T & input)
+{
+	auto out = this->coeffs.b[0] * input + this->z[0];
+	for (int i = 0; i < (static_cast<int>(curOrder)- 1); i++)
+	{
+		this->z[i] = this->coeffs.b[i + 1] * input + z[i + 1];
+	}
+	z[curOrder - 1] = this->coeffs.b[curOrder] * input;
+	return out;
+}
+
+template<typename T, unsigned int MaxOrder>
+inline void FIRFilter<T, MaxOrder>::setCoeffs(Coeffs coeffs)
+{
+	this->coeffs = coeffs;
+	
+	curOrder = MaxOrder;
+	while (curOrder > 0 && (coeffs.b[curOrder] == 0)) curOrder--;
+	curOrder = std::max(curOrder, 1U);
 }

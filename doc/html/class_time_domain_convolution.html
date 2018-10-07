@@ -103,7 +103,8 @@ Inheritance diagram for TimeDomainConvolution&lt; MaxSize &gt;:</div>
  <div class="center">
   <img src="class_time_domain_convolution.png" usemap="#TimeDomainConvolution_3C_20MaxSize_20_3E_map" alt=""/>
   <map id="TimeDomainConvolution_3C_20MaxSize_20_3E_map" name="TimeDomainConvolution_3C_20MaxSize_20_3E_map">
-<area href="class_a_convolution_engine.html" alt="AConvolutionEngine" shape="rect" coords="0,0,219,24"/>
+<area href="class_a_synced_convolution_engine.html" alt="ASyncedConvolutionEngine&lt; ImpulseResponse &gt;" shape="rect" coords="0,56,291,80"/>
+<area href="class_a_convolution_engine.html" alt="AConvolutionEngine" shape="rect" coords="0,0,291,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -112,16 +113,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a038623e13abb6b8f000a7212848ebe10"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_time_domain_convolution.html#a038623e13abb6b8f000a7212848ebe10">process</a> (const float *readL, const float *readR, float *writeL, float *writeR, unsigned int numSamples) override</td></tr>
 <tr class="separator:a038623e13abb6b8f000a7212848ebe10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_a_convolution_engine"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_a_convolution_engine')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_a_convolution_engine.html">AConvolutionEngine</a></td></tr>
-<tr class="memitem:afffdbfb2d93772f4b9d4cc4325147d8c inherit pub_methods_class_a_convolution_engine"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#afffdbfb2d93772f4b9d4cc4325147d8c">setImpulseResponse</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *impulseResponse)</td></tr>
-<tr class="separator:afffdbfb2d93772f4b9d4cc4325147d8c inherit pub_methods_class_a_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b5b13539377d9d17eb2b495a1237ff inherit pub_methods_class_a_convolution_engine"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#a98b5b13539377d9d17eb2b495a1237ff">setImpulseResponse</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;impulseResponse)</td></tr>
+<tr class="separator:a98b5b13539377d9d17eb2b495a1237ff inherit pub_methods_class_a_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7164cca2551ea3038adba588b03c1228 inherit pub_methods_class_a_convolution_engine"><td class="memItemLeft" align="right" valign="top"><a id="a7164cca2551ea3038adba588b03c1228"></a>
+const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getImpulseResponse</b> () const</td></tr>
+<tr class="separator:a7164cca2551ea3038adba588b03c1228 inherit pub_methods_class_a_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a3ccba416030340dc4da89fe4f09887d5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_time_domain_convolution.html#a3ccba416030340dc4da89fe4f09887d5">onImpulseResponseUpdated</a> () override</td></tr>
-<tr class="separator:a3ccba416030340dc4da89fe4f09887d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_class_a_convolution_engine"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_a_convolution_engine')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_a_convolution_engine.html">AConvolutionEngine</a></td></tr>
-<tr class="memitem:a86b129abd84a757e4b38d4bbd6bf756d inherit pro_methods_class_a_convolution_engine"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#a86b129abd84a757e4b38d4bbd6bf756d">getIR</a> ()</td></tr>
-<tr class="separator:a86b129abd84a757e4b38d4bbd6bf756d inherit pro_methods_class_a_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47974e3b226d29abc7e5c27d6a0e913"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_impulse_response.html">ImpulseResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_time_domain_convolution.html#ae47974e3b226d29abc7e5c27d6a0e913">preProcess</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir) override</td></tr>
+<tr class="separator:ae47974e3b226d29abc7e5c27d6a0e913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac63af730e2c588219f12357c6b5f5a0c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_time_domain_convolution.html#ac63af730e2c588219f12357c6b5f5a0c">onDataUpdate</a> () override</td></tr>
+<tr class="separator:ac63af730e2c588219f12357c6b5f5a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_a_synced_convolution_engine"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_a_synced_convolution_engine')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_a_synced_convolution_engine.html">ASyncedConvolutionEngine&lt; ImpulseResponse &gt;</a></td></tr>
+<tr class="memitem:a62594b137e3dc4d0d03a6aaccd4f8ecc inherit pro_methods_class_a_synced_convolution_engine"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onImpulseResponseUpdate</b> () override final</td></tr>
+<tr class="separator:a62594b137e3dc4d0d03a6aaccd4f8ecc inherit pro_methods_class_a_synced_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a31185617cc252398aabe3fb2510862 inherit pro_methods_class_a_synced_convolution_engine"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_synced_convolution_engine.html#a3a31185617cc252398aabe3fb2510862">updateData</a> ()</td></tr>
+<tr class="separator:a3a31185617cc252398aabe3fb2510862 inherit pro_methods_class_a_synced_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a6339ba48e99409c9d503858cf24da7 inherit pro_methods_class_a_synced_convolution_engine"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_synced_convolution_engine.html#a4a6339ba48e99409c9d503858cf24da7">getData</a> ()</td></tr>
+<tr class="separator:a4a6339ba48e99409c9d503858cf24da7 inherit pro_methods_class_a_synced_convolution_engine"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;unsigned int MaxSize&gt;<br />
@@ -129,8 +139,8 @@ class TimeDomainConvolution&lt; MaxSize &gt;</h3>
 
 <p>A time domain convlolution engine with a static MaxSize. MaxSize has to be a power of 2. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3ccba416030340dc4da89fe4f09887d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ccba416030340dc4da89fe4f09887d5">&#9670;&nbsp;</a></span>onImpulseResponseUpdated()</h2>
+<a id="ac63af730e2c588219f12357c6b5f5a0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac63af730e2c588219f12357c6b5f5a0c">&#9670;&nbsp;</a></span>onDataUpdate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -141,7 +151,7 @@ template&lt;unsigned int MaxSize&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="class_time_domain_convolution.html">TimeDomainConvolution</a>&lt; MaxSize &gt;::onImpulseResponseUpdated </td>
+          <td class="memname">void <a class="el" href="class_time_domain_convolution.html">TimeDomainConvolution</a>&lt; MaxSize &gt;::onDataUpdate </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -153,9 +163,46 @@ template&lt;unsigned int MaxSize&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called during setImpulseResponse to prepare the convolution engine for a new impulse response. Function is called in Audio Thread. </p>
+<p>Called after the data was updated. Called in audio thread. </p>
 
-<p>Implements <a class="el" href="class_a_convolution_engine.html#a039186e264349ca37f23c25ee73a3bd1">AConvolutionEngine</a>.</p>
+<p>Reimplemented from <a class="el" href="class_a_synced_convolution_engine.html#abf0c05d95047ddc32ec6a553a2e7cea3">ASyncedConvolutionEngine&lt; ImpulseResponse &gt;</a>.</p>
+
+</div>
+</div>
+<a id="ae47974e3b226d29abc7e5c27d6a0e913"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae47974e3b226d29abc7e5c27d6a0e913">&#9670;&nbsp;</a></span>preProcess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;unsigned int MaxSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_impulse_response.html">ImpulseResponse</a> <a class="el" href="class_time_domain_convolution.html">TimeDomainConvolution</a>&lt; MaxSize &gt;::preProcess </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;&#160;</td>
+          <td class="paramname"><em>ir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Pre Processing method called befor swaping live (audio thread) data and offline data. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ir</td><td>the input impulse response </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>T the data used during audio processing </dd></dl>
+
+<p>Implements <a class="el" href="class_a_synced_convolution_engine.html#aae50edb05298e0829f4a0fe47952e858">ASyncedConvolutionEngine&lt; ImpulseResponse &gt;</a>.</p>
 
 </div>
 </div>

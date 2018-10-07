@@ -211,6 +211,8 @@ void IRTools::normalize(ImpulseResponse & ir)
 
 	unsigned int size = ir.getSize();
 
+	bool useWeighting = (ir.getSize() > 16);
+
 	auto fs = ir.getSampleRate();
 
 	auto transform = AFourierTransformFactory::FourierTransform(std::log2(size));
@@ -226,7 +228,7 @@ void IRTools::normalize(ImpulseResponse & ir)
 		{
 			buffer.push_back(x[i]);
 		}
-
+		
 		// FFT
 		transform->performFFTInPlace(buffer.data());
 
@@ -236,50 +238,28 @@ void IRTools::normalize(ImpulseResponse & ir)
 		for (int i = 0; i < buffer.size(); i++)
 		{
 			float f = fs * static_cast<float>(i) / static_cast<float>(buffer.size());
-			float w = frequencyWeight(f, fs, 50, 20000, 2, 2);
+			float w = useWeighting ? frequencyWeight(f, fs, 50, 20000, 2, 2) : 1;
 
 			auto & bin = buffer[i];
 
 			xSum += std::abs(bin) * w;
 			wSum += w;
-		}
-
-		avg += xSum / wSum;
+		}				
+		avg += useWeighting ? xSum / wSum : xSum;
 
 	}
 
 	avg *= 0.5;
+	avg = std::max(avg, 0.0001f);
 
 	for (int c = 0; c < 2; c++)
 	{
-		std::vector<std::complex<float>> buffer;
 		auto x = (c == 0) ? ir.getLeft() : ir.getRight();
 
 		for (int i = 0; i < size; i++)
 		{
-			buffer.push_back(x[i]);
+			x[i] /= avg;
 		}
-
-		// FFT
-		transform->performFFTInPlace(buffer.data());
-
-		// apply average
-		float xSum = 0;
-		float wSum = 0;
-		for (int i = 0; i < buffer.size(); i++)
-		{
-			buffer[i] /= avg;
-		}
-		// remove DC
-		buffer[0] = 0;
-		
-		transform->performIFFTInPlace(buffer.data());
-
-		for (int i = 0; i < buffer.size(); i++)
-		{
-			x[i] = buffer[i].real();
-		}
-
 	}
 
 	delete transform;
@@ -361,6 +341,7 @@ void IRTools::makeMinPhase(ImpulseResponse & ir)
 
 	auto transform = AFourierTransformFactory::FourierTransform(std::log2(size));
 	
+	auto minAmp = std::exp(-60);
 
 	for (int c = 0; c < 2; c++)
 	{
@@ -379,17 +360,20 @@ void IRTools::makeMinPhase(ImpulseResponse & ir)
 		for (auto & bin : buffer)
 		{
 			auto ampl = std::abs(bin);
-			if (ampl <  0.000001) ampl = 0.000001; // argh
+			if (ampl <  minAmp) ampl = minAmp; // argh
 			bin = std::log(ampl);
 		}
 
 		// iFFT
 		transform->performIFFTInPlace(buffer.data());
-			
+		
+		bool isEven = (size % 2) == 0;
+
 		// special sauce mask
-		for (int i = 0; i < buffer.size(); i++)
+		buffer[0] = std::real(buffer[0]);
+		for (int i = 1; i < buffer.size(); i++)
 		{
-			auto gain = ((i == 0) ? 1 : ((i >= size / 2) ? 0 : 2));
+			auto gain = (isEven && (i == 0.5*size)) ?  1 :  (((i >= size / 2) ? 0 : 2));
 			buffer[i] = std::real(buffer[i]) * gain;
 		}
 
@@ -415,6 +399,7 @@ void IRTools::makeMinPhase(ImpulseResponse & ir)
 
 ImpulseResponse IRTools::warp(const ImpulseResponse & ir, float lambda, unsigned int len)
 {
+	if (lambda == 0) return ir;
 	std::vector<float> out[2];
 
 	assert((-1 <= lambda) && (lambda <= 1));

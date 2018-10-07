@@ -108,8 +108,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5cad5caffd8e9ec8e97a6438a5c85bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84111971a04459293c32329028d6d0c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_impulse_response.html">ImpulseResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i_r_tools.html#a84111971a04459293c32329028d6d0c5">truncate</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir, float dbThreshold, bool keepPow2)</td></tr>
 <tr class="separator:a84111971a04459293c32329028d6d0c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18222c7aef66fc51f4ae0b19e59c53e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i_r_tools.html#a18222c7aef66fc51f4ae0b19e59c53e7">octaveSmooth</a> (<a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir, float width, float fs)</td></tr>
-<tr class="separator:a18222c7aef66fc51f4ae0b19e59c53e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec4f774063c73b6858342c067b5d3c38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i_r_tools.html#aec4f774063c73b6858342c067b5d3c38">octaveSmooth</a> (<a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir, float width)</td></tr>
+<tr class="separator:aec4f774063c73b6858342c067b5d3c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acea8cd4c0666495b407765bdabbbadb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i_r_tools.html#acea8cd4c0666495b407765bdabbbadb2">normalize</a> (<a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir)</td></tr>
 <tr class="separator:acea8cd4c0666495b407765bdabbbadb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73c097c75ade8c8cdb2b0d49fc64e8d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i_r_tools.html#a73c097c75ade8c8cdb2b0d49fc64e8d0">fadeOut</a> (<a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;ir, float fHP, float fLP, unsigned int hpfOrder, unsigned int lpfOrder)</td></tr>
@@ -388,8 +388,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a18222c7aef66fc51f4ae0b19e59c53e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18222c7aef66fc51f4ae0b19e59c53e7">&#9670;&nbsp;</a></span>octaveSmooth()</h2>
+<a id="aec4f774063c73b6858342c067b5d3c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec4f774063c73b6858342c067b5d3c38">&#9670;&nbsp;</a></span>octaveSmooth()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -404,13 +404,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>width</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>fs</em>&#160;</td>
+          <td class="paramname"><em>width</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -423,7 +417,6 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">ir</td><td>the impulse response </td></tr>
     <tr><td class="paramname">width</td><td>kernel width in octaves </td></tr>
-    <tr><td class="paramname">fs</td><td>the sample rate </td></tr>
   </table>
   </dd>
 </dl>

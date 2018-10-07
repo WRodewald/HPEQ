@@ -13,30 +13,20 @@
 	#define ConvMaxSize 131072
 #endif
 
-
-// use this to enable the work in progress parfilt implementation
-#define ENABLE_PARFILT_WIP
-
-
 #include <mutex>
 #include <future>
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "IRLoader.h"
+
 #include "../hpeq/TimeDomainConvolution.h"
 #include "../hpeq/FFTConvolution.h"
 #include "../hpeq/FFTPartConvolution.h"
+#include "../hpeq/ParFiltConvolution.h"
+
 #include "../hpeq/AFourierTransformFactory.h"
 #include "JuceFourierTransform.h"
-
-#ifdef ENABLE_PARFILT_WIP
-#include "../hpeq/ParFiltConvolution.h"
-#endif
-
-
-
-
 
 /**
 	Implements #AFourierTransformFactory FFT engine factory. It uses the FFT engine provided by JUCE for the implementation.
@@ -73,9 +63,7 @@ public:
 		TimeDomain,
 		FFTBrute,
 		FFTPartitioned,
-#ifdef ENABLE_PARFILT_WIP
 		ParFilt
-#endif
 	};
 
 	enum class BusyState
@@ -102,20 +90,12 @@ public:
 
 		Engine engine;
 
-#ifdef ENABLE_PARFILT_WIP
+		unsigned int fftPartitions;
+
 		float	parFiltWarp;
-		int		parFiltOrder;
-#endif
-		bool operator== (const PreProcessorConfig &other)
-		{
-			// now this is going to be ugly.
-			bool same = true;
-			for (int i = 0; i < sizeof(PreProcessorConfig); i++)
-			{
-				same |= (*(((char*)this) + i)) == (*(((char*)&other) + i));
-			}
-			return same;
-		}
+		int		parFiltNumSOS;
+		int		parFiltFIROrder;
+		
 	};
 
 	struct PreProcessorInput
@@ -125,12 +105,7 @@ public:
 
 	};
 
-	// output from pre processor
-	struct PreProcessorOutput
-	{
-		std::unique_ptr<ImpulseResponse> ir{ nullptr };
-	};
-
+	
 public:
     //==============================================================================
     HpeqAudioProcessor();
@@ -184,28 +159,16 @@ protected:
 	// Inherited via AsyncUpdater
 	virtual void handleAsyncUpdate() override;
 
-
 private:	
 	/**
-		Preprocesses the impulse response and parfilt analysis.
+		Preprocesses the impulse response and notifies convolution engines
 	*/
-	PreProcessorOutput preProcess(ImpulseResponse ir, PreProcessorConfig cfg);
-
-	/**
-		Checks if the main thread knows about a new impulse response. If so, 
-		swaps the IR used in the audio thread with the one keept in the main thread
-	*/
-	void updateAudioThreadIR();
-
-	/**
-		Shedules a thread safe update of the impulse response used in the audio thread
-	*/
-	void sheduleUpdateForAudioThreadIR(std::unique_ptr<ImpulseResponse> ir);
+	ImpulseResponse preProcessAndUpdateIR(ImpulseResponse ir, PreProcessorConfig cfg);
 
 	/**
 		shedules a new pre processor run with the current parameters and loaded IR
 	*/
-	void shedulePreProcessorRun();
+	void shedulePreProcessAndUpdateIR();
 
 	/**
 		Two things: 
@@ -214,6 +177,12 @@ private:
 		@return returns 
 	*/
 	BusyState checkPreProcessorState();
+
+	/**
+		locks thread until preprocessor thread joined.	
+	*/
+	void	  joinPreProcessorThread();
+
 
 private:
 	
@@ -227,30 +196,19 @@ private:
 	TimeDomainConvolution<ConvMaxSize>  tdConvolution;
 	FFTConvolution<ConvMaxSize>			fftConvolution;
 	FFTPartConvolution<ConvMaxSize>		fftPartConvolution;
-#ifdef ENABLE_PARFILT_WIP
 	ParFiltConvolution					parFiltConvolution;
-#endif
 
-	// main thread impulse response variable, we can use this without having to deal with threading
-	ImpulseResponse offlineIR;
-
-	// the followng two IRs are used to give a new IR to the audio thread by pointer swap
-	// By keeping track of the swapped (old) one, we move the garbage collection to the main thread
-	std::unique_ptr<ImpulseResponse> cachedLiveIR{ nullptr };	// impulse response used in audio thread
-	std::unique_ptr<ImpulseResponse> cachedSwapIR{ nullptr };	// impulse response used for syncing with audio thread, th
-
-	bool irNeedsSwap{ false }; // does main thread have a newer IR?
-	std::mutex irSwapMutex;
+	// current impulse response
+	ImpulseResponse impulseResponse;
 
 	// we use this to store configurations for the pre processing until we can start a new thread.
 	// A note: we could either just use a PreProcessorConfig together with a bool that tells us if the conf has changed 
 	// or we could std::optional (C++17) that would do the same. Dynamic allocation is unnecessary
-	std::unique_ptr<PreProcessorInput> futurePreProcessorInput;
+	std::unique_ptr<PreProcessorInput> sheduledPreProcessorInput;
 
-	// we use this as an "anchorpoint" for pre processed IRs we want to give to the audio thread.
-	// like with futureConfig, we ideally would used std::optional (if std::future does support this),
-	// dynamic allocation is not necessary here
-	std::unique_ptr<std::future<PreProcessorOutput>> futurePreProcessorOutput;
+	// will contain pre processed impulse response
+	std::unique_ptr<std::future<ImpulseResponse>> futurePreProcessorOutput;
+	
 
 	struct 
 	{
@@ -267,10 +225,9 @@ private:
 
 		juce::AudioParameterInt * partitions;
 
-#ifdef ENABLE_PARFILT_WIP
 		juce::AudioParameterFloat  * parFiltWarp;
-		juce::AudioParameterInt  * parFiltOrder;
-#endif
+		juce::AudioParameterChoice  * parFiltIIROrder;
+		juce::AudioParameterChoice  * parFiltFIROrder;
 
 	} parameters;
 

@@ -1,13 +1,9 @@
 var searchData=
 [
-  ['impulseresponse',['ImpulseResponse',['../class_impulse_response.html',1,'ImpulseResponse'],['../class_impulse_response.html#af79ccccd15f2b31fc1c9f6d153895180',1,'ImpulseResponse::ImpulseResponse(std::vector&lt; float &gt; left, std::vector&lt; float &gt; right, float fs)'],['../class_impulse_response.html#a9cee1d8ec4eeb781d711a99ae285d273',1,'ImpulseResponse::ImpulseResponse()'],['../class_impulse_response.html#aaae211aaf63a274b51c4f80b9d719d8f',1,'ImpulseResponse::ImpulseResponse(const float *left, const float *right, unsigned int numSamples, float fs)']]],
-  ['impulseresponseupdatelistener',['ImpulseResponseUpdateListener',['../class_impulse_response_update_listener.html',1,'']]],
-  ['impulseresponseviewcomponent',['ImpulseResponseViewComponent',['../class_impulse_response_view_component.html',1,'']]],
-  ['increment',['increment',['../class_static_ring_buffer.html#aaf912e2ec82ad19a2b68ba6b20683c46',1,'StaticRingBuffer']]],
-  ['installstaticfactory',['installStaticFactory',['../class_a_fourier_transform_factory.html#ad091cdc7ee3d2a3036ca948cbadcc1bd',1,'AFourierTransformFactory']]],
-  ['invertmagresponse',['invertMagResponse',['../namespace_i_r_tools.html#a82a622d5e163df19e4d89199205c15b5',1,'IRTools']]],
-  ['irfileselectorcomponent',['IRFileSelectorComponent',['../class_i_r_file_selector_component.html',1,'']]],
-  ['irloader',['IRLoader',['../class_i_r_loader.html',1,'']]],
-  ['irtools',['IRTools',['../namespace_i_r_tools.html',1,'']]],
-  ['ispow2',['isPow2',['../namespace_i_r_tools.html#a90f67a6a409c9a3416a13c4fc481e7d8',1,'IRTools']]]
+  ['fadeout',['fadeOut',['../namespace_i_r_tools.html#a73c097c75ade8c8cdb2b0d49fc64e8d0',1,'IRTools']]],
+  ['fftconvolution',['FFTConvolution',['../class_f_f_t_convolution.html',1,'']]],
+  ['fftpartconvolution',['FFTPartConvolution',['../class_f_f_t_part_convolution.html',1,'']]],
+  ['fill',['fill',['../class_static_ring_buffer.html#aba2caaff6726df6f373ec9267bd42f9c',1,'StaticRingBuffer']]],
+  ['fouriertransform',['FourierTransform',['../class_a_fourier_transform_factory.html#ae4fdb1208accc7901c9f1f21af218095',1,'AFourierTransformFactory']]],
+  ['frequencyweight',['frequencyWeight',['../namespace_i_r_tools.html#aad8ed5eb0d16578e4c740a33fe6302f9',1,'IRTools']]]
 ];

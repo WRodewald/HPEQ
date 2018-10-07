@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['tick',['tick',['../class_i_r_tools_1_1_allpass_first_orer.html#ae834a2738972e68f931e86a998e097a6',1,'IRTools::AllpassFirstOrer::tick()'],['../class_par_filt_convolution_1_1_s_o_s.html#ad52e672a1f1ffbd861e131f6ae3a0c1c',1,'ParFiltConvolution::SOS::tick()'],['../class_static_ring_buffer.html#aa0198635f1da6e761473a0c8e9587e39',1,'StaticRingBuffer::tick()']]],
-  ['truncate',['truncate',['../namespace_i_r_tools.html#a84111971a04459293c32329028d6d0c5',1,'IRTools']]]
+  ['readf',['readF',['../class_static_ring_buffer.html#a85c3f9d4d4106fd098e201c088769958',1,'StaticRingBuffer']]],
+  ['resample',['resample',['../namespace_i_r_tools.html#ac6fbcfd9908751a0eac07a9f9c2e1f1f',1,'IRTools']]],
+  ['resize',['resize',['../class_impulse_response.html#aff110b27a50dccc7bdd59be24818f4a5',1,'ImpulseResponse']]],
+  ['roots',['roots',['../class_par_filt_convolution.html#aece848605f2dfd982ef006e099f29f71',1,'ParFiltConvolution']]]
 ];

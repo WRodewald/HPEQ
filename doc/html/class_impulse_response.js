@@ -13,5 +13,6 @@ var class_impulse_response =
     [ "getRightVector", "class_impulse_response.html#a77b0e935ecfd833231fe4ab0bf6a02cd", null ],
     [ "getSampleRate", "class_impulse_response.html#a80d325a900030f520752eb4a6e6aa88a", null ],
     [ "getSize", "class_impulse_response.html#ae65be87494c1b4c46e357bb3eee39a7e", null ],
-    [ "getVector", "class_impulse_response.html#a2c169fdf68109c8f234bbda949d2e6d0", null ]
+    [ "getVector", "class_impulse_response.html#a2c169fdf68109c8f234bbda949d2e6d0", null ],
+    [ "resize", "class_impulse_response.html#aff110b27a50dccc7bdd59be24818f4a5", null ]
 ];

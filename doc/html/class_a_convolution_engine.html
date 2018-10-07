@@ -89,7 +89,6 @@ $(document).ready(function(){initNavTree('class_a_convolution_engine.html','');}
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="class_a_convolution_engine-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">AConvolutionEngine Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -103,10 +102,13 @@ Inheritance diagram for AConvolutionEngine:</div>
  <div class="center">
   <img src="class_a_convolution_engine.png" usemap="#AConvolutionEngine_map" alt=""/>
   <map id="AConvolutionEngine_map" name="AConvolutionEngine_map">
-<area href="class_f_f_t_convolution.html" alt="FFTConvolution&lt; MaxSize &gt;" shape="rect" coords="0,56,219,80"/>
-<area href="class_f_f_t_part_convolution.html" alt="FFTPartConvolution&lt; MaxSize &gt;" shape="rect" coords="229,56,448,80"/>
-<area href="class_par_filt_convolution.html" alt="ParFiltConvolution" shape="rect" coords="458,56,677,80"/>
-<area href="class_time_domain_convolution.html" alt="TimeDomainConvolution&lt; MaxSize &gt;" shape="rect" coords="687,56,906,80"/>
+<area href="class_a_synced_convolution_engine.html" alt="ASyncedConvolutionEngine&lt; T &gt;" shape="rect" coords="0,56,291,80"/>
+<area href="class_a_synced_convolution_engine.html" alt="ASyncedConvolutionEngine&lt; FilterBank &gt;" shape="rect" coords="301,56,592,80"/>
+<area href="class_a_synced_convolution_engine.html" alt="ASyncedConvolutionEngine&lt; ImpulseResponse &gt;" shape="rect" coords="903,56,1194,80"/>
+<area href="class_par_filt_convolution.html" alt="ParFiltConvolution" shape="rect" coords="301,112,592,136"/>
+<area href="class_f_f_t_convolution.html" alt="FFTConvolution&lt; MaxSize &gt;" shape="rect" coords="602,112,893,136"/>
+<area href="class_f_f_t_part_convolution.html" alt="FFTPartConvolution&lt; MaxSize &gt;" shape="rect" coords="903,112,1194,136"/>
+<area href="class_time_domain_convolution.html" alt="TimeDomainConvolution&lt; MaxSize &gt;" shape="rect" coords="1204,112,1495,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -114,21 +116,19 @@ Inheritance diagram for AConvolutionEngine:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aab0a3eca5ad56f9f66b752ab018e493a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#aab0a3eca5ad56f9f66b752ab018e493a">process</a> (const float *readL, const float *readR, float *writeL, float *writeR, unsigned int numSamples)=0</td></tr>
 <tr class="separator:aab0a3eca5ad56f9f66b752ab018e493a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afffdbfb2d93772f4b9d4cc4325147d8c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#afffdbfb2d93772f4b9d4cc4325147d8c">setImpulseResponse</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *impulseResponse)</td></tr>
-<tr class="separator:afffdbfb2d93772f4b9d4cc4325147d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a039186e264349ca37f23c25ee73a3bd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#a039186e264349ca37f23c25ee73a3bd1">onImpulseResponseUpdated</a> ()=0</td></tr>
-<tr class="separator:a039186e264349ca37f23c25ee73a3bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a86b129abd84a757e4b38d4bbd6bf756d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#a86b129abd84a757e4b38d4bbd6bf756d">getIR</a> ()</td></tr>
-<tr class="separator:a86b129abd84a757e4b38d4bbd6bf756d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b5b13539377d9d17eb2b495a1237ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#a98b5b13539377d9d17eb2b495a1237ff">setImpulseResponse</a> (const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;impulseResponse)</td></tr>
+<tr class="separator:a98b5b13539377d9d17eb2b495a1237ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc77eb6032846cfba47b3de87e798f76"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_a_convolution_engine.html#abc77eb6032846cfba47b3de87e798f76">onImpulseResponseUpdate</a> ()</td></tr>
+<tr class="separator:abc77eb6032846cfba47b3de87e798f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7164cca2551ea3038adba588b03c1228"><td class="memItemLeft" align="right" valign="top"><a id="a7164cca2551ea3038adba588b03c1228"></a>
+const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getImpulseResponse</b> () const</td></tr>
+<tr class="separator:a7164cca2551ea3038adba588b03c1228"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class presents an interface for convolution engines </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a86b129abd84a757e4b38d4bbd6bf756d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a86b129abd84a757e4b38d4bbd6bf756d">&#9670;&nbsp;</a></span>getIR()</h2>
+<a id="abc77eb6032846cfba47b3de87e798f76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc77eb6032846cfba47b3de87e798f76">&#9670;&nbsp;</a></span>onImpulseResponseUpdate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,7 +137,7 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> * AConvolutionEngine::getIR </td>
+          <td class="memname">virtual void AConvolutionEngine::onImpulseResponseUpdate </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -145,39 +145,13 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns a pointer to the current impulse response. Is guaranteed to never return NULL. </p>
+<p>Called when <a class="el" href="class_a_convolution_engine.html#a98b5b13539377d9d17eb2b495a1237ff">setImpulseResponse</a> was called </p>
 
-</div>
-</div>
-<a id="a039186e264349ca37f23c25ee73a3bd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a039186e264349ca37f23c25ee73a3bd1">&#9670;&nbsp;</a></span>onImpulseResponseUpdated()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void AConvolutionEngine::onImpulseResponseUpdated </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Called during setImpulseResponse to prepare the convolution engine for a new impulse response. Function is called in Audio Thread. </p>
-
-<p>Implemented in <a class="el" href="class_par_filt_convolution.html#ae8d3395ae0b4a927153b7d558ceff74a">ParFiltConvolution</a>, <a class="el" href="class_f_f_t_convolution.html#a5a1562c29e471c479b4e2e8a3d57262b">FFTConvolution&lt; MaxSize &gt;</a>, <a class="el" href="class_f_f_t_part_convolution.html#aa5ae3bc58b4005781d347d5dd96e0cfb">FFTPartConvolution&lt; MaxSize &gt;</a>, and <a class="el" href="class_time_domain_convolution.html#a3ccba416030340dc4da89fe4f09887d5">TimeDomainConvolution&lt; MaxSize &gt;</a>.</p>
+<p>Reimplemented in <a class="el" href="class_a_synced_convolution_engine.html#a62594b137e3dc4d0d03a6aaccd4f8ecc">ASyncedConvolutionEngine&lt; T &gt;</a>, <a class="el" href="class_a_synced_convolution_engine.html#a62594b137e3dc4d0d03a6aaccd4f8ecc">ASyncedConvolutionEngine&lt; ImpulseResponse &gt;</a>, and <a class="el" href="class_a_synced_convolution_engine.html#a62594b137e3dc4d0d03a6aaccd4f8ecc">ASyncedConvolutionEngine&lt; FilterBank &gt;</a>.</p>
 
 </div>
 </div>
@@ -247,8 +221,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afffdbfb2d93772f4b9d4cc4325147d8c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afffdbfb2d93772f4b9d4cc4325147d8c">&#9670;&nbsp;</a></span>setImpulseResponse()</h2>
+<a id="a98b5b13539377d9d17eb2b495a1237ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b5b13539377d9d17eb2b495a1237ff">&#9670;&nbsp;</a></span>setImpulseResponse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,7 +233,7 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void AConvolutionEngine::setImpulseResponse </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="class_impulse_response.html">ImpulseResponse</a> &amp;&#160;</td>
           <td class="paramname"><em>impulseResponse</em></td><td>)</td>
           <td></td>
         </tr>
@@ -270,7 +244,7 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Sets the impulse response pointer. if pointer is nullptr, internally switches to dirac impulse response. </p>
+<p>Sets the impulse response. May not be called from audio thread. </p>
 
 </div>
 </div>

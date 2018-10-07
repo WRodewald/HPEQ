@@ -10,7 +10,7 @@ var class_static_ring_buffer =
     [ "increment", "class_static_ring_buffer.html#aaf912e2ec82ad19a2b68ba6b20683c46", null ],
     [ "operator=", "class_static_ring_buffer.html#ac124b499d0a1755f9d85163a55a742f7", null ],
     [ "operator=", "class_static_ring_buffer.html#a993025c5a053e3b2053fe8935e873f36", null ],
-    [ "operator[]", "class_static_ring_buffer.html#ad3aae1584b6e397768b09c4bde20d018", null ],
+    [ "operator[]", "class_static_ring_buffer.html#a34bba5b1bdc1444767c8d4fccec1fda0", null ],
     [ "readF", "class_static_ring_buffer.html#a85c3f9d4d4106fd098e201c088769958", null ],
     [ "setLength", "class_static_ring_buffer.html#a084f91feb8650bde1bde7de8c2c59b7f", null ],
     [ "setLengthAndResize", "class_static_ring_buffer.html#a00d74c4706c5ff36983669430e83faf3", null ],

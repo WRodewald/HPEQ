@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AConvolutionEngine.h"
+#include "ASyncedConvolutionEngine.h"
 #include "AFourierTransformFactory.h"
 #include "StaticQueue.h"
 #include "IRTools.h"
@@ -24,7 +24,7 @@
 	@param MaxSize maximum supported impulse response time, needs to be power of 2
 */
 template<unsigned int MaxSize>
-class FFTConvolution : public AConvolutionEngine
+class FFTConvolution : public ASyncedConvolutionEngine<ImpulseResponse>
 {
 private:
     static const unsigned int MaxOrder = 1 + IRTools::staticLog2(MaxSize);
@@ -35,7 +35,13 @@ public:
 
 	// Inherited via AConvolutionEngine
 	virtual void process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples) override;
-	virtual void onImpulseResponseUpdated() override;
+
+protected:
+
+	
+	// Inherited via ASyncedConvolutionEngine
+	virtual void onDataUpdate() override;
+	virtual ImpulseResponse preProcess(const ImpulseResponse &ir) override;
 
 private:
 
@@ -68,7 +74,6 @@ private:
 
 	unsigned int currentFFTOrder{ MinOrder }; 
 	unsigned int currentFFTSize{ 0 };
-
 };
 
 template<unsigned int MaxSize>
@@ -82,12 +87,14 @@ inline FFTConvolution<MaxSize>::FFTConvolution()
 		fftEngines[order] = std::unique_ptr<AFourierTransform>(AFourierTransformFactory::FourierTransform(order));
 	}
 
-	onImpulseResponseUpdated();
+	onImpulseResponseUpdate();
 }
 
 template<unsigned int MaxSize>
 inline void FFTConvolution<MaxSize>::process(const float * readL, const float * readR, float * writeL, float * writeR, unsigned int numSamples)
 {
+	updateData();
+
 	for (int i = 0; i < numSamples; i++)
 	{
 		// cache input in audio working buffer
@@ -109,9 +116,9 @@ inline void FFTConvolution<MaxSize>::process(const float * readL, const float * 
 
 
 template<unsigned int MaxSize>
-inline void FFTConvolution<MaxSize>::onImpulseResponseUpdated()
+inline void FFTConvolution<MaxSize>::onDataUpdate()
 {
-	unsigned int size = getIR()->getSize();
+	unsigned int size = getData()->getSize();
 	size = IRTools::nextPow2(size);
 
 	assert(size <= MaxSize);
@@ -148,12 +155,18 @@ inline void FFTConvolution<MaxSize>::onImpulseResponseUpdated()
 }
 
 template<unsigned int MaxSize>
+inline ImpulseResponse FFTConvolution<MaxSize>::preProcess(const ImpulseResponse & ir)
+{
+	return ir;
+}
+
+template<unsigned int MaxSize>
 inline void FFTConvolution<MaxSize>::updateKernelFFT()
 {
 	std::fill(kernelFFTs[0].begin(), kernelFFTs[0].end(), 0);
 	std::fill(kernelFFTs[1].begin(), kernelFFTs[1].end(), 0);
 
-	auto ir = getIR();
+	auto ir = getData();
 
 	for (int i = 0; i < ir->getSize(); i++)
 	{

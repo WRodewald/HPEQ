@@ -96,6 +96,11 @@ public:
 	*/
 	inline float getSampleRate() const;
 
+	/**
+		resizes the impulse response. When @p newSize > #getSize(), #resize will append zeros.
+	*/
+	inline void resize(unsigned int newSize);
+
 private:
 	std::vector<float> left;
 	std::vector<float> right;
@@ -184,4 +189,10 @@ inline unsigned int ImpulseResponse::getSize() const
 inline float ImpulseResponse::getSampleRate() const
 {
 	return sampleRate;
+}
+
+inline void ImpulseResponse::resize(unsigned int newSize)
+{
+	left.resize(newSize);
+	right.resize(newSize);
 }

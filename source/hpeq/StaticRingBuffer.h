@@ -84,7 +84,7 @@ public:
 		Function returns a reference to an element, with delay = writePos - @p readPos. So with @readPos = 0, the last written sample will be returned.
 		@param readPos the read position relative to write with delay = writePos - @p readPos
 	*/
-	T & operator[](unsigned int readPos);
+	T & operator[](int readPos);
 
 	/**
 		Function reads with linear interpolation
@@ -100,7 +100,7 @@ private:
 	unsigned int mask{ MaxSize - 1 };
 
 	std::array<T, MaxSize> buffer;
-	unsigned int writePos{ 0 };
+	int writePos{ 0 };
 
 	
 };
@@ -153,13 +153,15 @@ inline void StaticRingBuffer<T, MaxSize>::fill(const T & val)
 template<typename T, unsigned int MaxSize>
 inline T StaticRingBuffer<T, MaxSize>::tick(const T & input)
 {
-	unsigned int readPos  = (writePos-length + MaxSize) & mask;
+	unsigned int readPos  = (static_cast<int>(writePos)-static_cast<int>(length)+ static_cast<int>(MaxSize)) & mask;
+
+	auto output = buffer[readPos];
 
 	buffer[writePos] = input;
 	
 	increment();
 	
-	return buffer[readPos];
+	return output;
 }
 
 template<typename T, unsigned int MaxSize>
@@ -187,9 +189,9 @@ inline void StaticRingBuffer<T, MaxSize>::increment()
 }
 
 template<typename T, unsigned int MaxSize>
-inline T & StaticRingBuffer<T, MaxSize>::operator[](unsigned int idx)
+inline T & StaticRingBuffer<T, MaxSize>::operator[](int idx)
 {
-	unsigned int pos = (writePos - idx + MaxSize) & mask;
+	unsigned int pos = (static_cast<int>(writePos) - idx + static_cast<int>(MaxSize)) & mask;
 
 	return buffer[pos];
 }
