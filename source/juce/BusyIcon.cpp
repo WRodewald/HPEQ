@@ -1,9 +1,8 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <chrono>
+#include <ctime>
 
-#include "../../JuceLibraryCode/JuceHeader.h"
 #include "BusyIcon.h"
 
 //==============================================================================
@@ -98,7 +97,10 @@ void BusyIcon::setAppearance(juce::Colour colour, unsigned int numCircles, float
 
 float BusyIcon::getAngle()
 {
-	auto timeSecs = std::chrono::system_clock::now().time_since_epoch();
-	std::chrono::duration<float> time = timeSecs - std::chrono::floor<std::chrono::seconds>(timeSecs);
-	return 2 * M_PI * time.count();
+	
+	double  nowSec = std::clock() / static_cast<double>(CLOCKS_PER_SEC);
+	double  time   = nowSec - static_cast<uint64_t>(nowSec);
+
+	
+	return 2 * M_PI * time;
 }
